@@ -1,0 +1,18 @@
+:root { color-scheme: light dark; font: 14px/1.4 system-ui, sans-serif; }
+body { margin: 0; padding: 1rem; }
+body.popup { width: 24rem; padding: .6rem; }
+main { max-width: 48rem; margin: auto; }
+.intro { border: 1px solid rgba(128,128,128,.35); border-radius: 6px; padding: .5rem .8rem; margin-bottom: .8rem; }
+.intro ul { margin: .2rem 0; padding-inline-start: 1.2rem; }
+.intro li { margin-block: .25rem; }
+label { display: block; margin-block: .6rem; font-weight: 600; }
+input, select, button { font: inherit; }
+input:not([type=checkbox]):not([type=radio]), select { box-sizing: border-box; width: 100%; padding: .4rem .5rem; }
+button { padding: .4rem .75rem; cursor: pointer; white-space: nowrap; }
+button:disabled { cursor: not-allowed; opacity: .6; }
+:focus-visible { outline: 2px solid #668cff; outline-offset: 2px; }
+.bar { display: flex; gap: .4rem; align-items: center; }
+.actions { display: flex; justify-content: flex-end; gap: .4rem; margin-top: .4rem; }
+p { margin: .4rem 0; }
+[role=status]:empty, [role=alert]:empty { display: none; }
+[role=alert] { border-inline-start: 3px solid #d44; padding-inline-start: .5rem; }
