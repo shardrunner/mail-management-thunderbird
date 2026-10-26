@@ -152,9 +152,7 @@ async function loadBackground({ actionOpens = true } = {}) {
   const browser = {
     action: { openPopup: async options => { calls.push(['action', { ...options }]); return actionOpens; } },
     messageDisplayAction: { openPopup: async options => { calls.push(['messageDisplayAction', { ...options }]); return true; } },
-    mailTabs: { setSelectedMessages: async (tabId, ids) => { calls.push(['select', tabId, [...ids]]); } },
     commands: { onCommand: event('command') },
-    menus: { onClicked: event('menu'), create: () => {} },
     runtime: { onInstalled: event('installed'), openOptionsPage: () => {} },
   };
   vm.runInNewContext(await readFile(new URL('../extensions/move/background.js', import.meta.url), 'utf8'), { browser });
@@ -170,10 +168,4 @@ test('shortcut opens the toolbar popup in the main window, else the message head
   await noButton.on.command('move-suggest', { id: 1, type: 'mail', windowId: 3 });
   await noButton.on.command('move-suggest', { id: 2, type: 'messageDisplay', windowId: 4 });
   assert.deepEqual(noButton.calls, [['action', { windowId: 3 }], ['messageDisplayAction', { windowId: 3 }], ['messageDisplayAction', { windowId: 4 }]]);
-});
-
-test('context menu selects the clicked messages before opening the popup', async () => {
-  const bg = await loadBackground();
-  await bg.on.menu({ menuItemId: 'move-suggest', selectedMessages: { messages: [{ id: 9 }] } }, { id: 1, type: 'mail', windowId: 3 });
-  assert.deepEqual(bg.calls, [['select', 1, [9]], ['action', { windowId: 3 }]]);
 });

@@ -42,8 +42,7 @@ Use a separate profile (`thunderbird --no-remote --profile <dir>`) with test mai
    shows the error in the inline banner without overwriting your edits. Empty reply area
    or unusual quote layouts also show an inline error banner at the top of the composer.
 4. Move: select one message and press `Ctrl+Alt+M` (also with the reading pane hidden via
-   `F8`; also via the toolbar button, message header button and context menu on an
-   unselected row) → the popup opens with keyboard focus in the filter box, fetches the
+   `F8`; also via the toolbar button and message header button) → the popup opens with keyboard focus in the filter box, fetches the
    suggestion, pre-selects it, and `Enter` moves the message and closes the popup. Reopen
    on another message, type in the filter box (or press `ArrowDown`) and press `Enter` to
    move manually without an API key; excluded folders do not appear. `Esc` closes it.

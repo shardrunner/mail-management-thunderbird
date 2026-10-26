@@ -7,7 +7,7 @@ const GUIDES = {
     'Press Ctrl+Z to undo, or edit the reply and press Ctrl+Alt+C again to refine.',
   ],
   'Move Suggest': [
-    'Select one message in the message list (or open a message) and press Ctrl+Alt+M (or click Move Suggest in the toolbar, message header, or right-click menu).',
+    'Select one message in the message list (or open a message) and press Ctrl+Alt+M (or click Move Suggest in the toolbar or message header).',
     'A popup opens below the toolbar button with the suggested folder and rationale; keep the Move Suggest button in the main toolbar.',
     'Press Enter to move immediately, type or use Up/Down arrows to pick another folder, or press Esc to close.',
   ],

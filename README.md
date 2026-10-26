@@ -154,15 +154,15 @@ to the endpoint it was saved with.
 
 | Action | How |
 |---|---|
-| Suggest a folder | Select one message, press **Ctrl+Alt+M** or click **Move Suggest** (main toolbar, message header or message-list context menu) |
+| Suggest a folder | Select one message, press **Ctrl+Alt+M** or click **Move Suggest** (main toolbar or message header) |
 | Move to the suggestion | **Enter** or click **Move**; the popup closes once Thunderbird confirms the move |
 | Pick another folder | Type in the filter box or use **Up/Down**, then **Enter**; no need to wait for the model, and no API key needed |
 | Close | **Esc** or click elsewhere; a running request is dropped |
 
 - The popup works with the reading pane hidden (`F8`). In message tabs and windows it opens
   below the message header button.
-- Keep the **Move Suggest** button in the main toolbar: the shortcut and the context menu
-  open the popup from it.
+- Keep the **Move Suggest** button in the main toolbar: the shortcut opens the popup
+  from it.
 
 Change either shortcut under **Add-ons and Themes → gear icon → Manage Extension
 Shortcuts**.

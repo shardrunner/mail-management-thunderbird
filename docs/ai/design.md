@@ -37,7 +37,7 @@ beyond the safeguards listed below.
 shared/               settings (+ options page), provider request, MIME text extraction, limits
 extensions/compose/   background handles composeAction/shortcut triggers; core.js holds the
                       adapter and in-place reply flow; editor.js is injected into the composer
-extensions/move/      background opens the popup for shortcut/menu triggers; core.js holds
+extensions/move/      background opens the popup for the shortcut; core.js holds
                       selection, folder eligibility, suggestion and the move; popup.js is the
                       action / message display action popup
 scripts/package.mjs   zips LICENSE + shared/ + extensions/<name>/ with the manifest at the root
@@ -54,10 +54,9 @@ tests/                node:test unit tests; tests/integration is the isolated Th
   opens automatically.
 - **Move Suggest** is one popup page (`popup.html`) used as `default_popup` of both the
   main toolbar button (`action`) and the message header button (`message_display_action`).
-  `Ctrl+Alt+M` (`commands.onCommand`) and the message-list context menu (`menus`, after
-  `mailTabs.setSelectedMessages`, because right-clicking does not select) call
-  `action.openPopup` for a mail tab and fall back to `messageDisplayAction.openPopup`;
-  neither requires a user gesture in Thunderbird 158. The popup reads the selection of
+  `Ctrl+Alt+M` (`commands.onCommand`) calls `action.openPopup` for a mail tab and falls
+  back to `messageDisplayAction.openPopup`; neither requires a user gesture in
+  Thunderbird 158. The popup reads the selection of
   its window's mail tab (or the displayed message in a message tab/window), so the
   reading pane can stay hidden. It shows `Suggesting folder…` with the folder filter and
   eligible folder list, then the suggestion and rationale (or error), and moves the
@@ -77,7 +76,7 @@ tests/                node:test unit tests; tests/integration is the isolated Th
 - Folder labels are the account name plus the folders' display names (`MailFolder.name`)
   along the tree walk. `MailFolder.path` is not shown: for IMAP it is the raw server path
   (modified UTF-7, server delimiter), e.g. `&AMQ-rger` for `Ärger`.
-- Toolbar and menu selections are paginated
+- Mail tab selections are paginated
   [`MessageList`s](https://webextension-api.thunderbird.net/en/mv3/guides/messageLists.html).
   Read until the list ends or a second message is found, then abort any remaining list.
   A first page containing one message does not prove a single selection.

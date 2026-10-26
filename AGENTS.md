@@ -44,7 +44,7 @@ either `core.js`, or anything Thunderbird API-related; unit tests only use fakes
 - `extensions/compose/`: `manifest.json`, `background.js` (registers compose action and
   command listeners), `core.js` (in-place capture, generation and replacement), `policy.js`
   (prompt), `editor.js` (injected into the composer for capture/apply/banner).
-- `extensions/move/`: `manifest.json`, `background.js` (shortcut and menu open the popup),
+- `extensions/move/`: `manifest.json`, `background.js` (shortcut opens the popup),
   `core.js` (selection, folder eligibility, suggestion and move), `policy.js` (prompt),
   `popup.html`/`popup.js` (the toolbar and message header popup).
 - `scripts/package.mjs`: each XPI = LICENSE + `shared/` + `extensions/<name>/`, with the
