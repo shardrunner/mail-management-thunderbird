@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Move Suggest</title>
+  <link rel="stylesheet" href="../../shared/style.css">
+</head>
+<body class="popup">
+  <p id="status" role="status">Loading…</p>
+  <p id="error" role="alert"></p>
+  <input id="search" type="search" placeholder="Filter folders…" autocomplete="off" aria-label="Filter folders" autofocus>
+  <select id="folders" size="10" aria-label="Destination folder"></select>
+  <div class="actions">
+    <button id="settings" type="button">Settings</button>
+    <button id="move" type="button" disabled>Move (Enter)</button>
+  </div>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

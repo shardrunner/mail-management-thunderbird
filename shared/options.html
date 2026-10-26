@@ -14,7 +14,8 @@
   <section aria-labelledby="privacy-title">
     <h2 id="privacy-title">Privacy and data flow</h2>
     <p>When you trigger generation, Compose Assist sends your text above the quote, quoted context (including quoted history), subject, sender and recipient addresses, date, and attachment filenames to the configured HTTPS provider. Attachment contents are not sent. Encrypted originals are rejected without decryption, but pasted text cannot be identified as previously encrypted.</p>
-    <p>Requests set <code>store: false</code>, but your provider's processing and retention policies still apply. Email content leaves your computer; only use a provider you trust with it. Compose Assist never sends email automatically. Review generated replies before sending.</p>
+    <p>When you trigger a suggestion, Move Suggest sends the selected message's subject, author, recipients, CC, date, body text and attachment filenames, together with the eligible folder names, to the configured HTTPS provider. Attachment contents are not sent, and encrypted messages are rejected without decryption.</p>
+    <p>Requests set <code>store: false</code>, but your provider's processing and retention policies still apply. Email content leaves your computer; only use a provider you trust with it. Compose Assist never sends email automatically, and Move Suggest only moves a message when you confirm. Review generated replies before sending.</p>
   </section>
   <form id="settings">
     <label>Responses endpoint <input id="endpoint" type="url" required autocomplete="off" spellcheck="false"></label>

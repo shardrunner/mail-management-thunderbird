@@ -27,14 +27,14 @@ async function main() {
   const work = await mkdtemp('/tmp/mail-thunderbird-smoke-');
   console.log(`Synthetic profile/results retained at ${work}`);
   for (const directory of ['home', 'profile', 'probe']) await mkdir(path.join(work, directory));
-  for (const name of ['compose']) {
+  for (const name of ['compose', 'move']) {
     await cp(path.join(root, 'dist', `${name}.xpi`), path.join(work, `${name}.xpi`));
   }
   await cp(path.join(root, 'tests/integration/smoke-worker.mjs'), path.join(work, 'smoke-worker.mjs'));
   await cp(path.join(root, 'tests/integration/marionette.mjs'), path.join(work, 'marionette.mjs'));
   await cp(path.join(root, 'tests/integration/probe'), path.join(work, 'probe'), { recursive: true });
   // Exercise the exact release modules, not separate copies of their algorithms.
-  for (const name of ['compose']) {
+  for (const name of ['compose', 'move']) {
     const extracted = spawnSync('unzip', ['-oq', path.join(work, `${name}.xpi`), 'extensions/*', 'shared/*', '-d', path.join(work, 'probe')], {encoding:'utf8'});
     if (extracted.error || extracted.status !== 0) throw new Error('Could not extract production modules for isolated probe.');
   }

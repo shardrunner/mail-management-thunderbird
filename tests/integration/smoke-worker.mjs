@@ -10,7 +10,7 @@ let child, client, server, log;
 const watchdog = setTimeout(() => { child?.kill('SIGKILL'); process.exitCode = 1; }, 110_000);
 try {
   report.artifacts = {};
-  for (const name of ['compose']) report.artifacts[`${name}.xpi`] = createHash('sha256').update(await readFile(`/work/${name}.xpi`)).digest('hex');
+  for (const name of ['compose', 'move']) report.artifacts[`${name}.xpi`] = createHash('sha256').update(await readFile(`/work/${name}.xpi`)).digest('hex');
   let resolveProbe;
   const probeResult = new Promise(resolve => { resolveProbe = resolve; });
   server = http.createServer(async (request, response) => {
@@ -135,10 +135,10 @@ try {
     })().then(done, error => done({ error: String(error) }));
   `);
   report.checks.install = {};
-  for (const name of ['compose']) {
+  for (const name of ['compose', 'move']) {
     const installed = await client.command('Addon:Install', { path: `/work/${name}.xpi`, temporary: true });
     const id = installed?.value ?? installed;
-    const expected = 'compose-assist@personal.invalid';
+    const expected = name === 'compose' ? 'compose-assist@personal.invalid' : 'move-suggest@personal.invalid';
     if (id !== expected) throw new Error(`Unexpected installed ${name} ID`);
     report.checks.install[name] = id;
   }
@@ -148,7 +148,7 @@ try {
     (async () => {
       const { ExtensionParent } = ChromeUtils.importESModule('resource://gre/modules/ExtensionParent.sys.mjs');
       const checks = {};
-      for (const id of ['compose-assist@personal.invalid']) {
+      for (const id of ['compose-assist@personal.invalid', 'move-suggest@personal.invalid']) {
         const extension = ExtensionParent.GlobalManager.getExtension(id);
         if (!extension) throw new Error('Packaged extension not active: ' + id);
         await extension.wakeupBackground();
@@ -169,6 +169,92 @@ try {
     const timer = setTimeout(() => reject(new Error('Instrumented extension report timeout')), 45000); timer.unref();
   })]);
   if (!report.checks.probe.ok) throw new Error(`Probe failed: ${report.checks.probe.error}`);
+  // Real key events, as a user types them: Alt+Shift+letter is the Linux access-key modifier
+  // and never reached the command, which calling shortcuts.onCommand directly did not catch.
+  const pressCtrlAlt = `
+    const pressCtrlAlt = (win, letter) => {
+      const keys = Cc['@mozilla.org/text-input-processor;1'].createInstance(Ci.nsITextInputProcessor);
+      if (!keys.beginInputTransactionForTests(win)) throw new Error('No input transaction for Ctrl+Alt+' + letter);
+      const modifiers = [['Control', 'ControlLeft', 17], ['Alt', 'AltLeft', 18]].map(([key, code, keyCode]) => new win.KeyboardEvent('', { key, code, keyCode }));
+      const upper = letter.toUpperCase();
+      const event = new win.KeyboardEvent('', { key: letter, code: 'Key' + upper, keyCode: upper.charCodeAt(0) });
+      for (const modifier of modifiers) keys.keydown(modifier);
+      keys.keydown(event); keys.keyup(event);
+      for (const modifier of modifiers.reverse()) keys.keyup(modifier);
+    };
+  `;
+  // The real Ctrl+Alt+C in a composer the probe left open reaches the compose-assist command
+  // (recorded only: without an API key the command would open the Settings tab).
+  report.checks.composeShortcut = await execute(`
+    const done = arguments[arguments.length - 1];
+    ${pressCtrlAlt}
+    (async () => {
+      const { ExtensionParent } = ChromeUtils.importESModule('resource://gre/modules/ExtensionParent.sys.mjs');
+      const shortcuts = ExtensionParent.GlobalManager.getExtension('compose-assist@personal.invalid').shortcuts;
+      const win = Services.wm.getMostRecentWindow('msgcompose');
+      if (!win) throw new Error('Compose shortcut: no composer open');
+      win.focus();
+      for (const deadline = Date.now() + 15000; Services.focus.activeWindow !== win;) {
+        if (Date.now() > deadline) throw new Error('Compose shortcut: composer not focused');
+        await new Promise(resolve => win.setTimeout(resolve, 100));
+      }
+      win.document.getElementById('messageEditor').focus();
+      const fired = [];
+      shortcuts.onCommand = name => fired.push(name);
+      try {
+        pressCtrlAlt(win, 'c');
+        await new Promise(resolve => win.setTimeout(resolve, 500));
+      } finally { delete shortcuts.onCommand; }
+      if (fired.join() !== 'compose-assist') throw new Error('Compose shortcut: command not fired: ' + JSON.stringify(fired));
+      return { fired: true };
+    })().then(done, error => done({ error: String(error) }));
+  `);
+  // Move Suggest popup end to end, without an API key: the probe filed the synthetic message
+  // in SmokeDestination. Ctrl+Alt+M opens the toolbar popup without a click; typing
+  // a filter and Enter moves the message back, and a confirmed move closes the popup.
+  report.checks.movePopup = await execute(`
+    const done = arguments[arguments.length - 1];
+    ${pressCtrlAlt}
+    (async () => {
+      const { ExtensionParent } = ChromeUtils.importESModule('resource://gre/modules/ExtensionParent.sys.mjs');
+      const { ViewPopup } = ChromeUtils.importESModule('resource:///modules/ExtensionPopups.sys.mjs');
+      const { MailServices } = ChromeUtils.importESModule('resource:///modules/MailServices.sys.mjs');
+      const extension = ExtensionParent.GlobalManager.getExtension('move-suggest@personal.invalid');
+      const win = Services.wm.getMostRecentWindow('mail:3pane');
+      const root = MailServices.accounts.localFoldersServer.rootFolder;
+      const source = root.getChildNamed('SmokeSource'), filed = root.getChildNamed('SmokeDestination');
+      const until = async (condition, label) => {
+        for (const deadline = Date.now() + 15000; !condition();) {
+          if (Date.now() > deadline) throw new Error('Move popup: ' + label);
+          await new Promise(resolve => win.setTimeout(resolve, 100));
+        }
+      };
+      win.focus(); // the command targets the active tab; the probe left composers open
+      await until(() => Services.focus.activeWindow === win, 'main window not focused');
+      win.gTabmail.switchToTab(win.gTabmail.tabInfo.find(tab => tab.mode.name === 'mail3PaneTab'));
+      const about3Pane = win.gTabmail.currentAbout3Pane;
+      about3Pane.displayFolder(filed.URI);
+      await until(() => about3Pane.gDBView?.rowCount === 1, 'filed message not listed');
+      about3Pane.threadTree.selectedIndex = 0;
+      about3Pane.threadTree.focus();
+      pressCtrlAlt(win, 'm');
+      const popup = () => ViewPopup.for(extension, win);
+      await until(() => popup()?.browser?.currentURI?.spec.endsWith('/extensions/move/popup.html'), 'not opened');
+      await new Promise(resolve => win.setTimeout(resolve, 2000)); // folders load, key error shown
+      popup().browser.focus(); // headless panels do not take focus themselves (manual check)
+      await until(() => Services.focus.focusedElement === popup().browser, 'popup not focusable');
+      const tip = Cc['@mozilla.org/text-input-processor;1'].createInstance(Ci.nsITextInputProcessor);
+      if (!tip.beginInputTransactionForTests(win)) throw new Error('Move popup: no input transaction');
+      for (const key of [...'SmokeSource', 'Enter']) {
+        const event = new win.KeyboardEvent('', key === 'Enter' ? { key, code: 'Enter', keyCode: 13 } : { key });
+        tip.keydown(event);
+        tip.keyup(event);
+      }
+      await until(() => source.getTotalMessages(false) === 1 && filed.getTotalMessages(false) === 0, 'keyboard move not filed');
+      await until(() => !popup(), 'not closed after a confirmed move');
+      return { opened: true, keyboardMoveWithoutKey: true, closedAfterMove: true };
+    })().then(done, error => done({ error: String(error) }));
+  `);
   report.ok = true;
 } catch (error) {
   report.error = error.message;

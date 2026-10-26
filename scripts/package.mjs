@@ -4,7 +4,7 @@ import path from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
 
-export const EXTENSIONS = ['compose'];
+export const EXTENSIONS = ['compose', 'move'];
 
 // An XPI holds LICENSE, shared/ and its own extension folder; Markdown notes stay out.
 async function releaseFiles(root, name) {

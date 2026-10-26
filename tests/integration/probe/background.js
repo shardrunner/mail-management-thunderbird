@@ -21,7 +21,8 @@
     function flatten(folder) { return [folder, ...(folder.subFolders || []).flatMap(flatten)]; }
     const folders = flatten(accounts[0].rootFolder);
     const source = folders.find(folder => folder.name === 'SmokeSource');
-    assert(source, 'Missing synthetic source folder');
+    const destination = folders.find(folder => folder.name === 'SmokeDestination');
+    assert(source && destination, 'Missing synthetic folders');
     const messages = await until(async () => { const items = await list(source.id); return items.length ? items : null; }, 'local message indexing');
     assert(messages.length === 1 && messages[0].headerMessageId === 'smoke-fixture@example.invalid', 'Unexpected synthetic message');
     const captured = await browser.messages.get(messages[0].id);
@@ -36,7 +37,12 @@
     checks.messageRead = true;
 
     const { productionChecks } = await import('./production.js');
-    checks.production = await productionChecks({ accounts, captured, htmlMessage: htmlMessages[0] });
+    checks.production = await productionChecks({ accounts, captured, destination, htmlMessage: htmlMessages[0] });
+    // productionChecks ends with an onMoved-confirmed move; the folders prove it was not a copy.
+    const remaining = await list(source.id), filed = await list(destination.id);
+    assert(remaining.length === 0 && filed.length === 1, 'Move did not remove source exactly once');
+    assert(filed[0].headerMessageId === captured.headerMessageId, 'Moved wrong message');
+    checks.move = { sourceCount: remaining.length, destinationCount: filed.length };
     result = { ok: true, checks };
   } catch (error) { result = { ok: false, checks, error: error.message }; }
   // This is loopback inside an isolated network namespace, never a provider request.

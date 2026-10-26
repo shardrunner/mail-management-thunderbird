@@ -131,7 +131,7 @@ export function registerComposeBackground(api) {
           'loading',
           '…',
           'Compose Assist — Generating… (press again to cancel)',
-          'Generating reply… (press Alt+Shift+C to cancel)',
+          'Generating reply… (press Ctrl+Alt+C to cancel)',
         ),
       });
       if (inflight.get(tab.id) === controller) {

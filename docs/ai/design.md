@@ -1,53 +1,86 @@
 ---
-summary: Scope, architecture, decisions and known limits of the Compose Assist Thunderbird extension.
+summary: Scope, architecture, decisions and known limits of the two Thunderbird extensions.
 read_when:
-  - Changing the extension or deciding whether a behavior is intended
+  - Changing either extension or deciding whether a behavior is intended
 ---
 
 # Design notes
 
-Goal: a small, keyboard-driven, fluff-free personal-use tool integrated directly into the
-main Thunderbird compose workflow. No handling for extreme edge cases or hostile environments
+Goal: small, keyboard-driven, fluff-free personal-use tools integrated directly into the
+main Thunderbird workflow. No handling for extreme edge cases or hostile environments
 beyond the safeguards listed below.
 
 ## Scope
 
 - Thunderbird 158.0 or newer on Linux, matching the installed local version as the
-  minimum. The manifest enforces that minimum without an upper version bound;
+  minimum. Both manifests enforce that minimum without an upper version bound;
   older Thunderbird versions are unsupported.
-- Focused on in-place compose reply drafting inside Thunderbird. No external mail indexer,
-  thread expansion, attachment contents, or automatic sending.
+- Focused on in-place compose reply drafting and quick folder suggestion and filing inside
+  Thunderbird. No external mail indexer, thread expansion, batch triage, attachment
+  contents, cross-account moves, automatic sending or automatic filing.
 - One provider type: an HTTPS OpenAI-style Responses endpoint. Requests use plain-text
   output, `reasoning.effort: none` and `service_tier: fast`; the default model is
   `gpt-6.1-terra`. This is the fastest setting without loss of quality in the
-  [model evaluation](model-evaluation.md). Models or endpoints that reject these values fail
-  loudly.
+  [model evaluation](model-evaluation.md) (Compose Assist only; Move Suggest was not
+  evaluated). Move Suggest asks for the folder label on the first line and keywords on the
+  second; a label that is not exactly one eligible folder is an error. Models or endpoints
+  that reject these values fail loudly.
 - Plain-text reply drafting in both standard HTML (`isPlainText: false`) and plain-text
   (`isPlainText: true`) composers. Thunderbird owns the signature/name; the model writes
   the closing formula. Compose Assist reads whatever plain text is currently written above
-  the quote (instructions, notes, or a draft with edits/notes), the quoted context, and
-  message metadata (`Subject`, `From`, `To`, `Date`, and attachment filenames), and
+  the quote (instructions, notes, or a draft with edits/notes) plus the quoted context and
   replaces the text above the quote in place.
 
 ## Architecture
 
 ```text
 shared/               settings (+ options page), provider request, MIME text extraction, limits
-extensions/compose/   background handles composeAction/shortcut/install/startup triggers;
-                      core.js holds the adapter and in-place reply flow; editor.js is injected
-                      into the composer
-scripts/package.mjs   zips LICENSE + shared/ + extensions/compose/ with the manifest at the root
+extensions/compose/   background handles composeAction/shortcut triggers; core.js holds the
+                      adapter and in-place reply flow; editor.js is injected into the composer
+extensions/move/      background opens the popup for the shortcut; core.js holds
+                      selection, folder eligibility, suggestion and the move; popup.js is the
+                      action / message display action popup
+scripts/package.mjs   zips LICENSE + shared/ + extensions/<name>/ with the manifest at the root
 tests/                node:test unit tests; tests/integration is the isolated Thunderbird smoke
 ```
 
-- **Compose Assist** operates in place inside the composer window. Pressing `Alt+Shift+C`
+- **Compose Assist** operates in place inside the composer window. Pressing `Ctrl+Alt+C`
   (or clicking the compose toolbar button) captures the plain text written above the quote
   and the quoted context, shows a Shadow DOM status banner on `document.documentElement`
   (outside `document.body`, so `document.body.innerHTML` and `isModified` are untouched),
   sends the request to the model, and replaces the text above the quote in place. If an
   error occurs, the inline banner displays the error right at the top of the composer (and
-  dismisses automatically when typing or clicking). On install, update, startup, or when no
-  API key is set, the Quick Start & Settings tab opens automatically.
+  dismisses automatically when typing or clicking). If no API key is set, the Settings tab
+  opens automatically.
+- **Move Suggest** is one popup page (`popup.html`) used as `default_popup` of both the
+  main toolbar button (`action`) and the message header button (`message_display_action`).
+  `Ctrl+Alt+M` (`commands.onCommand`) calls `action.openPopup` for a mail tab and falls
+  back to `messageDisplayAction.openPopup`; neither requires a user gesture in
+  Thunderbird 158. The popup reads the selection of
+  its window's mail tab (or the displayed message in a message tab/window), so the
+  reading pane can stay hidden. It shows `Suggesting folder…` with the folder filter and
+  eligible folder list, then the suggestion and rationale (or error), and moves the
+  message on `Enter`. A confirmed move closes the popup; closing it otherwise unloads the
+  page and drops the pending request. The message list (`about:3pane`) is a privileged
+  document without WebExtension UI; a custom column would need a privileged Experiment
+  (`ThreadPaneColumns`), which is out of scope.
+- Both extensions open their Settings page (with a short quick-start guide) on install.
+  Compose Assist also opens it when triggered without an API key; Move Suggest only shows
+  the error, because a Settings tab would take focus and close the popup, and manual
+  filing works without a key.
+- Move Suggest reads favorites from `MailFolder.isFavorite` and queries the source
+  account's `lastUsedAsDestination` history. This metadata only annotates the existing
+  eligible-folder tree walk. No separate history store, new permissions, or history sent
+  to the provider; destination values remain the original folder labels. Writable
+  folders come from one `folders.query({ canAddMessages: true })` for the account; folder
+  queries cannot replace ancestor checks for excluded subtrees.
+- Folder labels are the account name plus the folders' display names (`MailFolder.name`)
+  along the tree walk. `MailFolder.path` is not shown: for IMAP it is the raw server path
+  (modified UTF-7, server delimiter), e.g. `&AMQ-rger` for `Ärger`.
+- Mail tab selections are paginated
+  [`MessageList`s](https://webextension-api.thunderbird.net/en/mv3/guides/messageLists.html).
+  Read until the list ends or a second message is found, then abort any remaining list.
+  A first page containing one message does not prove a single selection.
 
 ## Safeguards kept on purpose
 
@@ -67,6 +100,13 @@ tests/                node:test unit tests; tests/integration is the isolated Th
   recognized. `compose.setComposeDetails` cannot replace the synchronous editor operation:
   it offers neither an atomic snapshot check nor selective reply insertion. The smoke
   verifies protected nodes and native undo/redo (`Ctrl+Z`).
+- **Filing folders only:** special-use folders and their subtrees, virtual/tag/unified
+  folders and the source are never offered. `messages.move` could otherwise move to Trash.
+- **Move outcome from events:** the first matching `onMoved` or `onCopied` event determines
+  the outcome. Without one, the result is uncertain 15 s after issuing `messages.move`,
+  even if its promise is still pending. The deadline does not cancel Thunderbird's move;
+  it may finish later. An API rejection before an event/deadline is shown as an error.
+  Moves are never retried automatically, and each session permits only one attempt.
 - **Session-only key by default**, bound to the endpoint it was saved with. An opt-in
   "Remember key" checkbox moves it to `storage.local` (unencrypted in the profile, since
   Thunderbird offers extensions no secret store); the key is only ever in one area, and
@@ -83,7 +123,7 @@ insertion above. Measurements and alternatives are in the [model evaluation](mod
 
 Request 64 KiB, MIME depth 16 / 200 parts, request timeout 120 s
 (`shared/limits.js`). Total message size (including attachments) does not prevent
-drafting. Thunderbird 158's decoded `getFull` omits attachment bodies; our MIME reader
+suggestions. Thunderbird 158's decoded `getFull` omits attachment bodies; our MIME reader
 also excludes attachment parts. Quoted message history stays in the body; separate thread
 fetching is out of scope.
 
