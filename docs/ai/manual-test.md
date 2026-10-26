@@ -14,7 +14,8 @@ read_when:
   The isolated Thunderbird smoke test below is run separately, not in CI.
 - `npm run build && npm run test:thunderbird -- --run`: installs both built XPIs into a new
   headless Thunderbird profile inside a network-isolated `bwrap` sandbox (needs `zip`,
-  `unzip`, `bwrap`, `/usr/bin/thunderbird`). A test-only probe extension runs the packaged
+  `unzip`, `bwrap`, `/usr/bin/thunderbird`). Verifies that each extension's Settings tab
+  opens on install. A test-only probe extension runs the packaged
   modules against synthetic Local Folders messages: folder eligibility, favorites/recent
   destination metadata and ordering, MIME extraction, native HTML conversion (entities, malformed markup, hidden
   content and attachments over 1 MiB), quoted history, in-place compose replacement in
@@ -30,7 +31,8 @@ read_when:
 
 Use a separate profile (`thunderbird --no-remote --profile <dir>`) with test mail.
 
-1. Settings: save endpoint/model/key; the endpoint access prompt appears; the key is gone
+1. Settings: on install or update, each extension opens its Quick Start & Settings tab.
+   Save endpoint/model/key; the endpoint access prompt appears; the key is gone
    after a Thunderbird restart.
 2. Compose: write instructions above the quote in a reply (HTML or plain-text composer)
    and press `Ctrl+Alt+C`; the inline banner shows `Generating reply…`, then the

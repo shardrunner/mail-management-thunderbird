@@ -157,7 +157,9 @@ try {
           message instanceof Ci.nsIScriptError && (message.flags & Ci.nsIScriptError.warningFlag) === 0 &&
           message.sourceName?.startsWith(extension.baseURI.spec));
         if (errors.length) throw new Error('Packaged background script errors: ' + id + ' (' + errors.length + ')');
-        checks[id] = { context: true, scriptErrors: errors.length };
+        const hasOptionsTab = [...(extension.views || [])].some(v => v.viewType === 'tab' && v.uri?.spec.endsWith('/shared/options.html'));
+        if (!hasOptionsTab) throw new Error('Welcome/settings page did not open on install: ' + id);
+        checks[id] = { context: true, scriptErrors: errors.length, optionsTab: hasOptionsTab };
       }
       return checks;
     })().then(done, error => done({ error: String(error) }));
