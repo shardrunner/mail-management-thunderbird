@@ -17,8 +17,8 @@ function isFilingFolder(folder) {
     && !(folder.specialUse ?? []).some(role => EXCLUDED_ROLES.has(role));
 }
 
-export async function selectedMessageId(api, tabId, selection) {
-  let list = selection ?? await api.mailTabs.getSelectedMessages(tabId);
+export async function selectedMessageId(api, tabId) {
+  let list = await api.mailTabs.getSelectedMessages(tabId);
   const messages = [...list.messages];
   // A page is not the entire selection. Stop as soon as multiple messages are known.
   while (messages.length <= 1 && list.id) {
