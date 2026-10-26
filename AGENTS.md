@@ -23,7 +23,16 @@ If this file conflicts with `docs/ai/design.md`, follow `design.md` and fix this
 npm test                           # unit + packaging tests; zip/unzip, no npm install
 npm run build                      # dist/compose.xpi (needs zip)
 npm run test:thunderbird -- --run  # after build: isolated headless Thunderbird smoke test
+npm run evaluate -- --run           # live model evaluation on synthetic mail (billed)
+npm run judge -- --run --in=FILE    # blind two-judge quality rating of evaluated drafts (billed)
 ```
+
+`npm run evaluate` reads `OPENAI_API_KEY`, `OPENROUTER_API_KEY` and `GEMINI_API_KEY` from
+the gitignored `.env` in the repository root (`--runs=N`, `--only=regex`, `--out=file`;
+`--summarize=file` rebuilds the tables offline; `npm run judge` works the same way).
+Cases and checks are in `scripts/eval-cases.mjs`; results are in
+`docs/ai/model-evaluation.md`. Both make real, billed provider requests with synthetic mail
+only; run them only with the user's approval.
 
 Run the smoke test after changing `extensions/compose/editor.js`, `extensions/compose/core.js`,
 or anything Thunderbird API-related; unit tests only use fakes.

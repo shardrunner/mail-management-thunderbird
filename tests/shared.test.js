@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { DEFAULT_SETTINGS, validateSettings, loadSettings, loadApiKey, saveSettings } from '../shared/settings.js';
-import { prepareRequest, requestJson } from '../shared/provider.js';
+import { prepareRequest, requestText } from '../shared/provider.js';
 import { assertNotEncrypted, extractMessage } from '../shared/mail.js';
 import { LIMITS } from '../shared/limits.js';
 
@@ -12,7 +12,6 @@ function storageApi() {
 }
 
 const other = { endpoint: 'https://example.org/proxy/v1/responses', model: 'm' };
-const schema = { type: 'object', properties: { answer: { type: 'string' } }, required: ['answer'], additionalProperties: false };
 const envelope = text => JSON.stringify({ status: 'completed', output: [{ type: 'reasoning' }, { type: 'message', content: [{ type: 'output_text', text }] }] });
 
 test('settings require an HTTPS Responses endpoint and a model', () => {
@@ -33,24 +32,26 @@ test('API key is session-only and bound to the endpoint it was saved with', asyn
   assert.equal(await loadApiKey(other.endpoint, api), '');
 });
 
-test('prepared request is the exact Responses body with a strict schema', async t => {
+test('prepared request is the exact plain-text Responses body', async t => {
   const { api } = storageApi();
-  await assert.rejects(prepareRequest({ system: 's', prompt: 'p', schema, schemaName: 'answer' }, api), /API key/);
+  await assert.rejects(prepareRequest({ system: 's', prompt: 'p' }, api), /API key/);
   await saveSettings(DEFAULT_SETTINGS, 'key', api);
-  const prepared = await prepareRequest({ system: 's', prompt: 'mail', schema, schemaName: 'answer' }, api);
+  const prepared = await prepareRequest({ system: 's', prompt: 'mail' }, api);
   const body = JSON.parse(prepared.body);
-  assert.equal(body.model, 'gpt-6-luna');
+  assert.equal(body.model, 'gpt-6.1-terra');
   assert.equal(body.store, false);
-  assert.deepEqual(body.text.format, { type: 'json_schema', name: 'answer', strict: true, schema });
-  await assert.rejects(prepareRequest({ system: 's', prompt: 'x'.repeat(70000), schema, schemaName: 'answer' }, api), /too large/);
+  assert.deepEqual(body.reasoning, { effort: 'none' });
+  assert.equal(body.service_tier, 'fast');
+  assert.equal(body.text, undefined);
+  await assert.rejects(prepareRequest({ system: 's', prompt: 'x'.repeat(70000) }, api), /too large/);
 
   t.mock.method(globalThis, 'fetch', async (url, init) => {
     assert.equal(url, DEFAULT_SETTINGS.endpoint);
     assert.equal(init.body, prepared.body);
     assert.equal(init.headers.Authorization, 'Bearer key');
-    return new Response(envelope('{"answer":"ok"}'));
+    return new Response(envelope('Hello,\n\nok.'));
   });
-  assert.deepEqual(await requestJson(prepared), { answer: 'ok' });
+  assert.equal(await requestText(prepared), 'Hello,\n\nok.');
 });
 
 test('preparation never pairs its selected endpoint with another endpoint’s key', async () => {
@@ -59,20 +60,20 @@ test('preparation never pairs its selected endpoint with another endpoint’s ke
     local: { get: async () => ({ settings: ++reads === 1 ? DEFAULT_SETTINGS : other }) },
     session: { get: async () => ({ apiKey: { endpoint: other.endpoint, key: 'other-key' } }) },
   } };
-  await assert.rejects(prepareRequest({ system: 's', prompt: 'p', schema, schemaName: 'answer' }, api), /API key/);
+  await assert.rejects(prepareRequest({ system: 's', prompt: 'p' }, api), /API key/);
 });
 
 test('provider failures and cancellation are reported', async t => {
   const prepared = { endpoint: DEFAULT_SETTINGS.endpoint, body: '{}', apiKey: 'k' };
   const respond = response => t.mock.method(globalThis, 'fetch', async () => response);
   respond(new Response('nope', { status: 401 }));
-  await assert.rejects(requestJson(prepared), /HTTP 401/);
+  await assert.rejects(requestText(prepared), /HTTP 401/);
   respond(new Response(JSON.stringify({ status: 'incomplete', output: [] })));
-  await assert.rejects(requestJson(prepared), /no complete answer/);
+  await assert.rejects(requestText(prepared), /no complete answer/);
 
   t.mock.method(globalThis, 'fetch', (url, init) => new Promise((_, reject) => init.signal.addEventListener('abort', () => reject(init.signal.reason))));
   const controller = new AbortController();
-  const pending = requestJson(prepared, { signal: controller.signal });
+  const pending = requestText(prepared, { signal: controller.signal });
   controller.abort();
   await assert.rejects(pending, /cancelled/);
 });

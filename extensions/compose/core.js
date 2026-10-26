@@ -1,8 +1,8 @@
 // Compose Assist logic: capture the text above the quote, generate a reply, and replace it in place.
 import { editorOperation } from './editor.js';
-import { POLICY, SCHEMA } from './policy.js';
+import { POLICY } from './policy.js';
 import { assertNotEncrypted } from '../../shared/mail.js';
-import { prepareRequest, requestJson } from '../../shared/provider.js';
+import { prepareRequest, requestText } from '../../shared/provider.js';
 
 function header(full, name) {
   const values = Object.entries(full?.headers ?? {})
@@ -47,15 +47,13 @@ export function createAdapter(api, tabId) {
     apply: (snapshot, draft) => runEditor({ action: 'apply', snapshot, draft }),
     banner: banner => runEditor({ action: 'banner', banner }),
     prepare: request => prepareRequest(request, api),
-    request: (prepared, signal) => requestJson(prepared, { signal }),
+    request: (prepared, signal) => requestText(prepared, { signal }),
   };
 }
 
 export function validateResult(value) {
-  if (typeof value?.draft_body !== 'string' || !value.draft_body.trim()) {
-    throw new Error('The model returned an invalid reply.');
-  }
-  return value;
+  if (typeof value !== 'string' || !value.trim()) throw new Error('The model returned an empty reply.');
+  return value.trim();
 }
 
 export function makePrompt(editor) {
@@ -69,7 +67,7 @@ export function makePrompt(editor) {
     attachments: editor.attachments ?? [],
     current_text: currentText,
     quoted_context: editor.context,
-  }, null, 2);
+  });
 }
 
 // Captures the current composer state, requests a reply from the model, and replaces
@@ -78,17 +76,12 @@ export async function composeReply(adapter, { signal, onLoading } = {}) {
   const captured = await adapter.capture();
   const prompt = makePrompt(captured);
   await onLoading?.();
-  const prepared = await adapter.prepare({
-    system: POLICY,
-    prompt,
-    schema: SCHEMA,
-    schemaName: 'compose_reply',
-  });
+  const prepared = await adapter.prepare({ system: POLICY, prompt });
   signal?.throwIfAborted();
-  const result = validateResult(await adapter.request(prepared, signal));
+  const draft = validateResult(await adapter.request(prepared, signal));
   signal?.throwIfAborted();
-  await adapter.apply(captured.snapshot, result.draft_body);
-  return result.draft_body;
+  await adapter.apply(captured.snapshot, draft);
+  return draft;
 }
 
 export function registerComposeBackground(api) {

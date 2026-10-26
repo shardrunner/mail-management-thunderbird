@@ -49,7 +49,7 @@ test('composeReply sends the text above the quote and replaces it in place; refi
     current_text: 'decline politely, suggest Tuesday',
     quoted_context: 'quoted',
   });
-  x.respond({ draft_body: 'First generated reply' });
+  x.respond('First generated reply');
   assert.equal(await first, 'First generated reply');
   assert.deepEqual(x.calls.apply, [['snap:decline politely, suggest Tuesday', 'First generated reply']]);
 
@@ -65,7 +65,7 @@ test('composeReply sends the text above the quote and replaces it in place; refi
     current_text: 'First generated reply\n\nMake it shorter.',
     quoted_context: 'quoted',
   });
-  x.respond({ draft_body: 'Shorter reply' });
+  x.respond('Shorter reply');
   assert.equal(await second, 'Shorter reply');
   assert.deepEqual(x.calls.apply[1], ['snap:First generated reply\n\nMake it shorter.', 'Shorter reply']);
 });
@@ -74,14 +74,15 @@ test('empty text above the quote is rejected before calling the provider', async
   const x = setup();
   x.setDraft('   \n  ');
   assert.throws(() => makePrompt({ draft: '  ', context: 'q' }), /Write instructions/);
+  assert.doesNotMatch(makePrompt({ draft: 'hi', context: 'q' }), /\n/);
   await assert.rejects(composeReply(x.adapter), /Write instructions/);
   assert.equal(x.calls.request, 0);
 });
 
-test('model result must contain a non-empty draft_body', () => {
-  assert.throws(() => validateResult({ draft_body: ' ' }));
-  assert.throws(() => validateResult({}));
-  assert.equal(validateResult({ draft_body: 'x' }).draft_body, 'x');
+test('model result must be a non-empty reply text', () => {
+  assert.throws(() => validateResult(' \n'));
+  assert.throws(() => validateResult(undefined));
+  assert.equal(validateResult('\nHi,\n\nx\n'), 'Hi,\n\nx');
 });
 
 test('adapter: HTML and plain-text composers supported, headers/attachments captured, originals inspected without decryption, encrypted originals rejected', async () => {
@@ -127,7 +128,7 @@ test('background controller replaces text in place, shows inline banner on loadi
   let body = 'acknowledge receipt', releaseFetch = null, optionsOpened = 0;
   const badges = [], titles = [], banners = [];
   let apiKey = { key: 'k', endpoint: 'https://api.openai.com/v1/responses' };
-  const reply = JSON.stringify({ draft_body: 'Generated reply' });
+  const reply = 'Generated reply';
   t.mock.method(globalThis, 'fetch', async (url, init) => {
     if (releaseFetch === false) {
       await new Promise((resolve, reject) => {

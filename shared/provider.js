@@ -2,7 +2,7 @@ import { LIMITS } from './limits.js';
 import { loadSettings, loadApiKey } from './settings.js';
 
 // Builds the Responses API request from current settings and session key.
-export async function prepareRequest({ system, prompt, schema, schemaName }, api = browser) {
+export async function prepareRequest({ system, prompt }, api = browser) {
   const { endpoint, model } = await loadSettings(api);
   const apiKey = await loadApiKey(endpoint, api);
   if (!apiKey) throw new Error('Set an API key in Settings.');
@@ -10,7 +10,10 @@ export async function prepareRequest({ system, prompt, schema, schemaName }, api
     model,
     instructions: system,
     input: [{ role: 'user', content: [{ type: 'input_text', text: prompt }] }],
-    text: { format: { type: 'json_schema', name: schemaName, strict: true, schema } },
+    // Measured fastest without loss in quality (docs/ai/model-evaluation.md): plain text
+    // instead of a JSON schema, no hidden reasoning, and the Fast service tier.
+    reasoning: { effort: 'none' },
+    service_tier: 'fast',
     store: false,
     max_output_tokens: 8192,
   });
@@ -18,8 +21,8 @@ export async function prepareRequest({ system, prompt, schema, schemaName }, api
   return { endpoint, model, body, apiKey };
 }
 
-// Sends a prepared request once and returns the model's JSON answer.
-export async function requestJson({ endpoint, body, apiKey }, { signal } = {}) {
+// Sends a prepared request once and returns the model's text answer.
+export async function requestText({ endpoint, body, apiKey }, { signal } = {}) {
   const timeout = AbortSignal.timeout(LIMITS.timeoutMs);
   let envelope;
   try {
@@ -42,5 +45,5 @@ export async function requestJson({ endpoint, body, apiKey }, { signal } = {}) {
   const message = envelope.output?.find(item => item.type === 'message');
   const text = message?.content?.find(part => part.type === 'output_text')?.text;
   if (envelope.status !== 'completed' || typeof text !== 'string') throw new Error('The provider returned no complete answer.');
-  return JSON.parse(text);
+  return text;
 }

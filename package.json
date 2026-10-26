@@ -8,6 +8,8 @@
   "scripts": {
     "test": "node --test tests/*.test.js",
     "build": "node scripts/package.mjs",
-    "test:thunderbird": "node scripts/thunderbird-smoke.mjs"
+    "test:thunderbird": "node scripts/thunderbird-smoke.mjs",
+    "evaluate": "node --env-file=.env scripts/evaluate.mjs",
+    "judge": "node --env-file=.env scripts/judge.mjs"
   }
 }

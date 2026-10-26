@@ -94,7 +94,7 @@ export async function productionChecks({ accounts, captured, htmlMessage }) {
       assert(parsed.from === 'Synthetic <synthetic@example.invalid>', `Prompt omitted from: ${parsed.from}`);
       assert(parsed.to === 'receiver@example.invalid', `Prompt omitted to: ${parsed.to}`);
       assert(parsed.date === 'Sat, 1 Jan 2022 00:00:00 +0000', `Prompt omitted date: ${parsed.date}`);
-      return { draft_body: 'Synthetic generated reply.' };
+      return 'Synthetic generated reply.';
     },
   });
   assert((await adapter.capture()).draft.includes('Synthetic generated reply.'), 'In-place composeReply did not replace instructions');

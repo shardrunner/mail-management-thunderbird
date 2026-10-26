@@ -1,0 +1,288 @@
+{"judge":"gpt-6.1-sol","case":"en-accept","run":0,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":4,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":0,"config":"openai:gpt-6-luna medium","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":0,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":0,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":0,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":0,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":0,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":0,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":4}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":0,"config":"claude-cli:haiku medium","faithfulness":5,"tone":4,"naturalness":4,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":0,"config":"openai:gpt-6-luna medium","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":0,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":0,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":0,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":0,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":0,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":0,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":4}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":1,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":1,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":1,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":1,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":1,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":1,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":1,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":4}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":1,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":1,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":4,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":1,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":1,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":1,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":1,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":1,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":1,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":1,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":2,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":2,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":2,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":2,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":2,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":2,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":2,"config":"openai:gpt-6-luna medium","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-accept","run":2,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":4}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":2,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":2,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":2,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":2,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":2,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":2,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":2,"config":"openai:gpt-6-luna medium","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-accept","run":2,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":4}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":0,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":0,"config":"openai:gpt-6.1-terra none","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":0,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":4}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":0,"config":"openai:gpt-6.1-terra low","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":0,"config":"claude-cli:haiku medium","faithfulness":4,"tone":5,"naturalness":4,"concision":3}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":0,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":0,"config":"openai:gpt-6.1-terra medium","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":0,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":0,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":0,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":0,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":4,"tone":5,"naturalness":4,"concision":4}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":0,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":0,"config":"claude-cli:haiku medium","faithfulness":4,"tone":4,"naturalness":3,"concision":3}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":0,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":0,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":0,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":1,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":1,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":1,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":1,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":1,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":1,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":1,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":1,"config":"claude-cli:haiku medium","faithfulness":3,"tone":5,"naturalness":4,"concision":4}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":1,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":1,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":4}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":1,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":4,"tone":5,"naturalness":4,"concision":3}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":1,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":1,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":1,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":1,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":1,"config":"claude-cli:haiku medium","faithfulness":3,"tone":3,"naturalness":3,"concision":4}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":2,"config":"claude-cli:haiku medium","faithfulness":4,"tone":5,"naturalness":4,"concision":4}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":2,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":2,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":4,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":2,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":2,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":2,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":4}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":2,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-formal","run":2,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":2,"config":"claude-cli:haiku medium","faithfulness":4,"tone":5,"naturalness":3,"concision":4}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":2,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":2,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":2,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":2,"config":"openai:gpt-6-luna medium","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":2,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":4,"tone":5,"naturalness":5,"concision":4}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":2,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-formal","run":2,"config":"openai:gpt-6-luna none","faithfulness":4,"tone":5,"naturalness":4,"concision":4}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":0,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":0,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":0,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":0,"config":"openai:gpt-6-luna none","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":0,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":0,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":0,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":0,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":0,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":4,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":0,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":0,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":0,"config":"openai:gpt-6-luna none","faithfulness":4,"tone":4,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":0,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":4,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":0,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":0,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":0,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":1,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":1,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":1,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":1,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":1,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":4,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":1,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":1,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":1,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":2,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":2,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":2,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":2,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":2,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":2,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":2,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-informal","run":2,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":1,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":1,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":1,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":4,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":1,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":1,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":4,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":1,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":4,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":1,"config":"gemini:gemini-3.8-flash low","faithfulness":4,"tone":4,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":1,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":0,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":0,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":0,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":0,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":0,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":0,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":0,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":0,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":2,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":2,"config":"openai:gpt-6-luna none","faithfulness":4,"tone":4,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":2,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":4,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":2,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":2,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":4,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":2,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":2,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-informal","run":2,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":1,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":1,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":1,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":1,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":1,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":1,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":1,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":1,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":2,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":2,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":2,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":2,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":2,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":5,"concision":4}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":2,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":2,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-missing-facts","run":2,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":2,"naturalness":3,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":0,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":0,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":0,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":0,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":4,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":0,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":0,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":0,"config":"openai:gpt-6.1-terra medium","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":0,"config":"openai:gpt-6.1-terra low","faithfulness":4,"tone":4,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":0,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":0,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":0,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":0,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":4,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":0,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":0,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":0,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":0,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":1,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":1,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":1,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":1,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":4,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":1,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":1,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":1,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":1,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":1,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":1,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":1,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":4,"naturalness":4,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":1,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":4,"naturalness":4,"concision":4}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":1,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":4,"naturalness":4,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":1,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":1,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":4,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":1,"config":"claude-cli:haiku medium","faithfulness":5,"tone":4,"naturalness":4,"concision":4}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":2,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":2,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":2,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":2,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":2,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":2,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":4,"concision":4}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":2,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"en-injection","run":2,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":2,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":2,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":2,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":2,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":2,"config":"claude-cli:haiku medium","faithfulness":4,"tone":5,"naturalness":5,"concision":4}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":2,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":2,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-missing-facts","run":2,"config":"openai:gpt-6-luna none","faithfulness":4,"tone":1,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":0,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":0,"config":"openai:gpt-6-luna medium","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":0,"config":"claude-cli:haiku medium","faithfulness":4,"tone":5,"naturalness":5,"concision":4}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":0,"config":"gemini:gemini-3.8-flash low","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":0,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":0,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":0,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":4,"concision":4}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":0,"config":"openai:gpt-6-luna none","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":1,"config":"gemini:gemini-3.8-flash low","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":1,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":1,"config":"openai:gpt-6-luna medium","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":1,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":1,"config":"openai:gpt-6.1-terra none","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":1,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":1,"config":"openai:gpt-6-luna none","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":1,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":4,"concision":4}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":0,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":0,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":0,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":0,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":0,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":0,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":0,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":0,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":2,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":2,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":2,"config":"openai:gpt-6.1-terra none","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":2,"config":"gemini:gemini-3.8-flash low","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":2,"config":"openai:gpt-6-luna none","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":2,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":2,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":4}
+{"judge":"gpt-6.1-sol","case":"de-refine","run":2,"config":"openai:gpt-6-luna medium","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":1,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":1,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":1,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":1,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":1,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":1,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":1,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":1,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":2,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":2,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":2,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":2,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":2,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":2,"config":"claude-cli:haiku medium","faithfulness":5,"tone":4,"naturalness":3,"concision":4}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":2,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"en-injection","run":2,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":0,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":0,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":0,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":5,"concision":3}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":0,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":0,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":4,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":0,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":4,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":0,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":5,"tone":5,"naturalness":4,"concision":4}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":0,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":1,"config":"gemini:gemini-3.8-flash low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":1,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":5,"concision":4}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":1,"config":"openai:gpt-6-luna medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":1,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":4,"naturalness":5,"concision":4}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":1,"config":"openai:gpt-6.1-terra none","faithfulness":5,"tone":4,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":1,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":4,"naturalness":5,"concision":4}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":1,"config":"openai:gpt-6-luna none","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":1,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":4,"tone":4,"naturalness":3,"concision":3}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":2,"config":"openai:gpt-6.1-terra low","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":2,"config":"claude-cli:haiku medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":2,"config":"openai:gpt-6.1-terra none","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":2,"config":"gemini:gemini-3.8-flash low","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":2,"config":"openai:gpt-6-luna none","faithfulness":4,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":2,"config":"openai:gpt-6.1-terra medium","faithfulness":5,"tone":5,"naturalness":5,"concision":5}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":2,"config":"openai:gpt-6.1-sol low ultrafast","faithfulness":3,"tone":4,"naturalness":4,"concision":3}
+{"judge":"gemini-3.8-flash","case":"de-refine","run":2,"config":"openai:gpt-6-luna medium","faithfulness":4,"tone":5,"naturalness":5,"concision":5}

@@ -17,7 +17,11 @@ beyond the safeguards listed below.
   older Thunderbird versions are unsupported.
 - Focused on in-place compose reply drafting inside Thunderbird. No external mail indexer,
   thread expansion, attachment contents, or automatic sending.
-- One provider type: an HTTPS OpenAI-style Responses endpoint with strict JSON schema output.
+- One provider type: an HTTPS OpenAI-style Responses endpoint. Requests use plain-text
+  output, `reasoning.effort: none` and `service_tier: fast`; the default model is
+  `gpt-6.1-terra`. This is the fastest setting without loss of quality in the
+  [model evaluation](model-evaluation.md). Models or endpoints that reject these values fail
+  loudly.
 - Plain-text reply drafting in both standard HTML (`isPlainText: false`) and plain-text
   (`isPlainText: true`) composers. Thunderbird owns the signature/name; the model writes
   the closing formula. Compose Assist reads whatever plain text is currently written above
@@ -64,6 +68,13 @@ tests/                node:test unit tests; tests/integration is the isolated Th
   it offers neither an atomic snapshot check nor selective reply insertion. The smoke
   verifies protected nodes and native undo/redo (`Ctrl+Z`).
 - **Session-only key**, bound to the endpoint it was saved with.
+
+## Latency
+
+A draft takes about 1.1 s (median; p90 1.8 s), of which 0.7–0.8 s is the time to the first
+token on the provider side. Local Thunderbird work is negligible. Streaming into the editor
+would hide most of the wait, but conflicts with the single synchronous snapshot-checked
+insertion above. Measurements and alternatives are in the [model evaluation](model-evaluation.md).
 
 ## Limits
 

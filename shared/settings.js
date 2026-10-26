@@ -1,4 +1,4 @@
-export const DEFAULT_SETTINGS = Object.freeze({ endpoint: 'https://api.openai.com/v1/responses', model: 'gpt-6-luna' });
+export const DEFAULT_SETTINGS = Object.freeze({ endpoint: 'https://api.openai.com/v1/responses', model: 'gpt-6.1-terra' });
 
 export function validateSettings({ endpoint, model }) {
   const url = URL.parse(endpoint);
