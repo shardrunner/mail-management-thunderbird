@@ -1,5 +1,7 @@
 # Thunderbird Compose Assist
 
+[![CI](https://github.com/shardrunner/mail-management-thunderbird/actions/workflows/ci.yml/badge.svg)](https://github.com/shardrunner/mail-management-thunderbird/actions/workflows/ci.yml)
+
 > **Disclaimer:** This project is vibe coded for personal use. Use at your own risk.
 
 A small, keyboard-first extension for **Thunderbird 158.0 or newer on Linux**:
@@ -25,6 +27,20 @@ and shortcut. Enter the model (default `gpt-6-luna`), an HTTPS endpoint ending i
 asks for access to that endpoint. The key is kept only for the current Thunderbird session
 and only for the endpoint it was saved with.
 
+## Privacy and data flow
+
+- When you trigger generation, Compose Assist sends the text above the quote, quoted
+  context (including quoted message history), subject, sender and recipient addresses,
+  date, and attachment filenames to your configured HTTPS provider endpoint.
+- Attachment contents are not sent. Encrypted originals are rejected without decryption;
+  text you paste into the composer cannot be identified as previously encrypted.
+- Your API key is kept in Thunderbird session storage, not in persistent extension
+  settings, and is used only with the endpoint it was saved for. Saving settings does not
+  send a provider request.
+- Requests set `store: false`, but your provider's own processing and retention policies
+  still apply. Email content leaves your computer; only use a provider you trust with it.
+- Compose Assist never sends email automatically. Review generated replies before sending.
+
 ## Use
 
 In a reply composer, write your plain-text instructions or draft notes above the quote and
@@ -45,6 +61,9 @@ press **Alt+Shift+C** (or click Compose Assist):
 
 Change the shortcut in Thunderbird → Add-ons and Themes → gear → **Manage Extension
 Shortcuts**.
+
+GitHub Actions runs the unit and packaging tests and builds the XPI on Node.js 22 and 24.
+The isolated Thunderbird smoke test is run separately, not in CI.
 
 See [design notes](docs/ai/design.md) for decisions and limits and
 [manual checks](docs/ai/manual-test.md) for what is not automated.

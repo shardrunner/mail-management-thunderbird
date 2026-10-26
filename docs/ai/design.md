@@ -80,6 +80,3 @@ refinement is unsupported in that layout. Capture and Apply must both reject it 
 changing the editor, even with a current snapshot. Do not infer boundaries from plain text.
 Header persistence and native shortcut routing are left to Thunderbird; interactive
 checks remain in [verification](manual-test.md).
-
-Not verified: a live provider call with `gpt-6-luna`, the full interactive UI in
-Thunderbird, IMAP accounts.

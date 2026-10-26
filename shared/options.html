@@ -10,7 +10,12 @@
 <main>
   <h1 id="title">Settings</h1>
   <section id="intro" class="intro"></section>
-  <p>Settings belong to this extension only. The API key is kept for this Thunderbird session and never written to disk.</p>
+  <p>Settings belong to this extension only. The API key is kept in Thunderbird session storage, not in persistent extension settings, and is used only with the endpoint it was saved for. Saving settings does not send a provider request.</p>
+  <section aria-labelledby="privacy-title">
+    <h2 id="privacy-title">Privacy and data flow</h2>
+    <p>When you trigger generation, Compose Assist sends your text above the quote, quoted context (including quoted history), subject, sender and recipient addresses, date, and attachment filenames to the configured HTTPS provider. Attachment contents are not sent. Encrypted originals are rejected without decryption, but pasted text cannot be identified as previously encrypted.</p>
+    <p>Requests set <code>store: false</code>, but your provider's processing and retention policies still apply. Email content leaves your computer; only use a provider you trust with it. Compose Assist never sends email automatically. Review generated replies before sending.</p>
+  </section>
   <form id="settings">
     <label>Responses endpoint <input id="endpoint" type="url" required autocomplete="off" spellcheck="false"></label>
     <label>Model <input id="model" required autocomplete="off" spellcheck="false"></label>

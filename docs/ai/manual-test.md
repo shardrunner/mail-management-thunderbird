@@ -9,7 +9,9 @@ read_when:
 ## Automated
 
 - `npm test`: unit tests with fake Thunderbird APIs and a fake provider, plus real archive
-  packaging checks (needs Node.js 22+, `zip` and `unzip`; no npm install).
+  packaging checks (needs Node.js 22+, `zip` and `unzip`; no npm install). GitHub Actions
+  runs these tests and `npm run build` on Node.js 22 and 24 for pushes and pull requests.
+  The isolated Thunderbird smoke test below is run separately, not in CI.
 - `npm run build && npm run test:thunderbird -- --run`: installs `dist/compose.xpi` into a
   new headless Thunderbird profile inside a network-isolated `bwrap` sandbox (needs `zip`,
   `unzip`, `bwrap`, `/usr/bin/thunderbird`). Verifies that the Welcome / Quick Start &
