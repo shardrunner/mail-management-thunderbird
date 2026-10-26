@@ -15,10 +15,10 @@ read_when:
 - `npm run build && npm run test:thunderbird -- --run`: installs both built XPIs into a new
   headless Thunderbird profile inside a network-isolated `bwrap` sandbox (needs `zip`,
   `unzip`, `bwrap`, `/usr/bin/thunderbird`). Verifies that each extension's Settings tab
-  opens on install. A test-only probe extension runs the packaged
-  modules against synthetic Local Folders messages: folder eligibility, favorites/recent
-  destination metadata and ordering, MIME extraction, native HTML conversion (entities, malformed markup, hidden
-  content and attachments over 1 MiB), quoted history, in-place compose replacement in
+  opens on install. A test-only probe extension runs the packaged modules against
+  synthetic Local Folders messages: folder eligibility, favorites/recent destination
+  metadata and ordering, MIME extraction, native HTML conversion (entities, malformed
+  markup, hidden content and attachments over 1 MiB), quoted history, in-place compose replacement in
   both HTML (`isPlainText: false`) and plain-text (`isPlainText: true`) composers, inline
   compose banner isolation, stale Apply/undo/redo/refinement, saved MIME body, safe
   Capture/Apply refusal after native draft reopening, and an event-confirmed move. It then

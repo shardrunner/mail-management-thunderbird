@@ -59,7 +59,7 @@ export async function eligibleFolders(api, source) {
   const writableIds = new Set(writable.map(folder => folder.id));
   const recentIndexes = new Map(recent.map((folder, index) => [folder.id, index]));
   const rows = [];
-  async function visit(folder, parentLabel) {
+  function visit(folder, parentLabel) {
     for (const child of folder.subFolders ?? []) {
       if (!isFilingFolder(child)) continue;
       const label = `${parentLabel}/${child.name}`;
@@ -69,10 +69,10 @@ export async function eligibleFolders(api, source) {
           recentIndex: recentIndexes.get(child.id) ?? null,
         });
       }
-      await visit(child, label);
+      visit(child, label);
     }
   }
-  await visit(account.rootFolder, account.name);
+  visit(account.rootFolder, account.name);
   return rows;
 }
 
