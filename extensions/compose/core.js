@@ -157,7 +157,7 @@ export function registerComposeBackground(api) {
   }
 
   function onStorageChanged(changes, area) {
-    if ((area === 'local' && changes.settings) || (area === 'session' && changes.apiKey)) {
+    if ((area === 'local' && changes.settings) || changes.apiKey) {
       for (const controller of inflight.values()) controller.abort();
     }
   }

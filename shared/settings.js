@@ -13,15 +13,24 @@ export async function loadSettings(api = browser) {
   return settings ?? DEFAULT_SETTINGS;
 }
 
-// The key is kept only in session storage, and only for the endpoint it was
-// saved with, so changing the endpoint never sends the old key elsewhere.
+// The key lives in exactly one area: session storage by default, or unencrypted
+// local storage when the user opts in to remembering it. Either way it is used
+// only for the endpoint it was saved with, so changing the endpoint never sends
+// the old key elsewhere.
 export async function loadApiKey(endpoint, api = browser) {
-  const { apiKey } = await api.storage.session.get('apiKey');
+  const apiKey = (await api.storage.session.get('apiKey')).apiKey ?? (await api.storage.local.get('apiKey')).apiKey;
   return apiKey?.endpoint === endpoint ? apiKey.key : '';
 }
 
-export async function saveSettings(settings, key, api = browser) {
+export async function isApiKeyRemembered(api = browser) {
+  return (await api.storage.local.get('apiKey')).apiKey != null;
+}
+
+export async function saveSettings(settings, key, api = browser, { remember = false } = {}) {
   const valid = validateSettings(settings);
-  await api.storage.session.set({ apiKey: { key: key.trim(), endpoint: valid.endpoint } });
+  const [keep, drop] = remember ? ['local', 'session'] : ['session', 'local'];
+  await api.storage[drop].remove('apiKey');
+  if (key.trim()) await api.storage[keep].set({ apiKey: { key: key.trim(), endpoint: valid.endpoint } });
+  else await api.storage[keep].remove('apiKey');
   await api.storage.local.set({ settings: valid });
 }

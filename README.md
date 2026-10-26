@@ -44,12 +44,13 @@ Thunderbird → Add-ons and Themes → gear → **Install Add-on From File**.
 
 ## Configure
 
-On install, update, or startup (or when triggered without a session API key), Compose Assist
+On install, update, or startup (or when triggered without an API key), Compose Assist
 opens its **Quick Start & Settings** tab automatically with a short overview of its workflow
 and shortcut. Enter the model (default `gpt-6.1-terra`, chosen by a [model evaluation](docs/ai/model-evaluation.md)), an HTTPS endpoint ending in
 `/v1/responses` (default `https://api.openai.com/v1/responses`) and an API key. Saving
-asks for access to that endpoint. The key is kept only for the current Thunderbird session
-and only for the endpoint it was saved with.
+asks for access to that endpoint. By default the key is kept only for the current Thunderbird
+session; tick **Remember key across restarts** to keep it persistently instead. Either way it
+is used only with the endpoint it was saved with.
 
 ## Privacy and data flow
 
@@ -58,8 +59,10 @@ and only for the endpoint it was saved with.
   date, and attachment filenames to your configured HTTPS provider endpoint.
 - Attachment contents are not sent. Encrypted originals are rejected without decryption;
   text you paste into the composer cannot be identified as previously encrypted.
-- Your API key is kept in Thunderbird session storage, not in persistent extension
-  settings, and is used only with the endpoint it was saved for. Saving settings does not
+- By default your API key is kept in Thunderbird session storage and cleared on restart.
+  If you opt in to remembering it, it is stored **unencrypted** in your Thunderbird profile
+  (extension local storage), readable by anything with access to that profile, including
+  backups. Either way it is used only with the endpoint it was saved for. Saving settings does not
   send a provider request.
 - Requests set `store: false`, but your provider's own processing and retention policies
   still apply. Email content leaves your computer; only use a provider you trust with it.

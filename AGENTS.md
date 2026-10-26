@@ -54,7 +54,7 @@ or anything Thunderbird API-related; unit tests only use fakes.
   windows, no handling for extreme edge cases, cross-context races or defense-in-depth.
   Prefer removing code over adding options.
 - **Keep the safeguards in `docs/ai/design.md`:** never decrypt mail, the synchronous
-  editor snapshot check before in-place replacement, session-only key bound to its endpoint.
+  editor snapshot check before in-place replacement, session-only key by default (opt-in persistence), bound to its endpoint.
 
 ## Thunderbird pitfalls
 

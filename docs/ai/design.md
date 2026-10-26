@@ -67,7 +67,10 @@ tests/                node:test unit tests; tests/integration is the isolated Th
   recognized. `compose.setComposeDetails` cannot replace the synchronous editor operation:
   it offers neither an atomic snapshot check nor selective reply insertion. The smoke
   verifies protected nodes and native undo/redo (`Ctrl+Z`).
-- **Session-only key**, bound to the endpoint it was saved with.
+- **Session-only key by default**, bound to the endpoint it was saved with. An opt-in
+  "Remember key" checkbox moves it to `storage.local` (unencrypted in the profile, since
+  Thunderbird offers extensions no secret store); the key is only ever in one area, and
+  the endpoint binding still applies.
 
 ## Latency
 

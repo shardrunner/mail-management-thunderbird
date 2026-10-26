@@ -1,13 +1,17 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { DEFAULT_SETTINGS, validateSettings, loadSettings, loadApiKey, saveSettings } from '../shared/settings.js';
+import { DEFAULT_SETTINGS, validateSettings, loadSettings, loadApiKey, isApiKeyRemembered, saveSettings } from '../shared/settings.js';
 import { prepareRequest, requestText } from '../shared/provider.js';
 import { assertNotEncrypted, extractMessage } from '../shared/mail.js';
 import { LIMITS } from '../shared/limits.js';
 
 function storageApi() {
   const data = { local: {}, session: {} };
-  const area = name => ({ get: async () => structuredClone(data[name]), set: async values => Object.assign(data[name], structuredClone(values)) });
+  const area = name => ({
+    get: async () => structuredClone(data[name]),
+    set: async values => Object.assign(data[name], structuredClone(values)),
+    remove: async key => { delete data[name][key]; },
+  });
   return { data, api: { storage: { local: area('local'), session: area('session') } } };
 }
 
@@ -22,7 +26,7 @@ test('settings require an HTTPS Responses endpoint and a model', () => {
   assert.deepEqual(validateSettings(other), other);
 });
 
-test('API key is session-only and bound to the endpoint it was saved with', async () => {
+test('API key is session-only by default and bound to the endpoint it was saved with', async () => {
   const { api, data } = storageApi();
   assert.deepEqual(await loadSettings(api), DEFAULT_SETTINGS);
   await saveSettings(DEFAULT_SETTINGS, ' secret ', api);
@@ -30,6 +34,28 @@ test('API key is session-only and bound to the endpoint it was saved with', asyn
   assert.doesNotMatch(JSON.stringify(data.local), /secret/);
   await api.storage.local.set({ settings: other });
   assert.equal(await loadApiKey(other.endpoint, api), '');
+});
+
+test('remembered API key persists in local storage only and is still bound to its endpoint', async () => {
+  const { api, data } = storageApi();
+  await saveSettings(DEFAULT_SETTINGS, ' secret ', api, { remember: true });
+  assert.equal(await isApiKeyRemembered(api), true);
+  assert.deepEqual(data.local.apiKey, { key: 'secret', endpoint: DEFAULT_SETTINGS.endpoint });
+  assert.equal(data.session.apiKey, undefined);
+  data.session = {}; // Thunderbird restart
+  assert.equal(await loadApiKey(DEFAULT_SETTINGS.endpoint, api), 'secret');
+  assert.equal(await loadApiKey(other.endpoint, api), '');
+
+  // Unchecking moves the key back to session storage and deletes the persistent copy.
+  await saveSettings(DEFAULT_SETTINGS, 'secret', api);
+  assert.equal(await isApiKeyRemembered(api), false);
+  assert.doesNotMatch(JSON.stringify(data.local), /secret/);
+  assert.equal(await loadApiKey(DEFAULT_SETTINGS.endpoint, api), 'secret');
+
+  // An empty key clears it from both areas.
+  await saveSettings(DEFAULT_SETTINGS, ' ', api, { remember: true });
+  assert.equal(await loadApiKey(DEFAULT_SETTINGS.endpoint, api), '');
+  assert.doesNotMatch(JSON.stringify(data), /secret/);
 });
 
 test('prepared request is the exact plain-text Responses body', async t => {

@@ -1,4 +1,4 @@
-import { loadSettings, loadApiKey, saveSettings, validateSettings } from './settings.js';
+import { loadSettings, loadApiKey, isApiKeyRemembered, saveSettings, validateSettings } from './settings.js';
 
 const GUIDES = {
   'Compose Assist': [
@@ -31,7 +31,7 @@ $('settings').addEventListener('submit', async event => {
     // Request access before any other await so the click still counts as a user gesture.
     const granted = await browser.permissions.request({ origins: [`${new URL(settings.endpoint).origin}/*`] });
     if (!granted) throw new Error('Access to the endpoint was not granted.');
-    await saveSettings(settings, $('api-key').value);
+    await saveSettings(settings, $('api-key').value, browser, { remember: $('remember-key').checked });
     $('status').textContent = 'Saved. No request was sent.';
   } catch (error) {
     $('error').textContent = error.message;
@@ -42,3 +42,4 @@ const settings = await loadSettings();
 $('endpoint').value = settings.endpoint;
 $('model').value = settings.model;
 $('api-key').value = await loadApiKey(settings.endpoint);
+$('remember-key').checked = await isApiKeyRemembered();
