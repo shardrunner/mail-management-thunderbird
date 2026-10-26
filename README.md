@@ -22,10 +22,10 @@ message, or type to pick another folder without waiting.
 
 ## Highlights
 
-- **In-place, keyboard-driven workflow:** drafting and refining happen in the normal reply
-  composer (HTML and plain text), with no pop-ups or review windows. The reply is inserted
-  only if the composer still matches the snapshot taken at the start, so your edits are
-  never overwritten.
+- **In-place, keyboard-driven workflow:** Compose Assist drafts and refines in the normal
+  reply composer (HTML and plain text), with no pop-ups or review windows. The reply is
+  inserted only if the composer still matches the snapshot taken at the start, so your
+  edits are never overwritten.
 - **Quick filing:** Move Suggest offers only same-account filing folders (never Inbox,
   Sent, Drafts, Templates, Outbox, Junk, Trash or their subfolders) and lists the
   suggestion first, then favorites and recently used folders. A move only counts as done
