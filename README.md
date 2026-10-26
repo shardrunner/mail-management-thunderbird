@@ -77,11 +77,11 @@ Select message ──▶ Ctrl+Alt+M ──▶ Popup below the toolbar button
 
 ## Model evaluation
 
-Six synthetic emails cover the failure modes that matter for this tool: English and German,
-formal and informal register, missing facts, prompt injection hidden in the quoted mail,
-and refining an existing draft. Across the six cases, 54 case-specific automated checks
-assessed 540 drafts, and two judge models from different vendors rated 288 of them blind
-for writing quality.
+Six synthetic emails cover the failure modes that matter for drafting replies: English and
+German, formal and informal register, missing facts, prompt injection hidden in the quoted
+mail, and refining an existing draft. Across the six cases, 54 case-specific automated
+checks assessed 540 drafts, and two judge models from different vendors rated 288 of them
+blind for writing quality.
 
 | Model and setting | Checks passed | Quality (1–5) | Median latency | USD / 1k drafts |
 |---|---:|---:|---:|---:|
