@@ -168,7 +168,7 @@ try {
   })]);
   if (!report.checks.probe.ok) throw new Error(`Probe failed: ${report.checks.probe.error}`);
   // Move Suggest popup end to end, without an API key: the probe filed the synthetic message
-  // in SmokeDestination. The shortcut command opens the toolbar popup without a click; typing
+  // in SmokeDestination. Ctrl+Alt+M opens the toolbar popup without a click; typing
   // a filter and Enter moves the message back, and a confirmed move closes the popup.
   report.checks.movePopup = await execute(`
     const done = arguments[arguments.length - 1];
@@ -193,7 +193,16 @@ try {
       about3Pane.displayFolder(filed.URI);
       await until(() => about3Pane.gDBView?.rowCount === 1, 'filed message not listed');
       about3Pane.threadTree.selectedIndex = 0;
-      extension.shortcuts.onCommand('move-suggest');
+      // Press the real shortcut: Alt+Shift+letter is the Linux access-key modifier and never
+      // reached the command, which calling shortcuts.onCommand directly did not catch.
+      about3Pane.threadTree.focus();
+      const keys = Cc['@mozilla.org/text-input-processor;1'].createInstance(Ci.nsITextInputProcessor);
+      if (!keys.beginInputTransactionForTests(win)) throw new Error('Move popup: no input transaction');
+      const modifiers = [['Control', 'ControlLeft', 17], ['Alt', 'AltLeft', 18]].map(([key, code, keyCode]) => new win.KeyboardEvent('', { key, code, keyCode }));
+      const letter = new win.KeyboardEvent('', { key: 'm', code: 'KeyM', keyCode: 77 });
+      for (const modifier of modifiers) keys.keydown(modifier);
+      keys.keydown(letter); keys.keyup(letter);
+      for (const modifier of modifiers.reverse()) keys.keyup(modifier);
       const popup = () => ViewPopup.for(extension, win);
       await until(() => popup()?.browser?.currentURI?.spec.endsWith('/extensions/move/popup.html'), 'not opened');
       await new Promise(resolve => win.setTimeout(resolve, 2000)); // folders load, key error shown

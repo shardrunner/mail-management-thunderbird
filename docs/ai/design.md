@@ -54,7 +54,7 @@ tests/                node:test unit tests; tests/integration is the isolated Th
   opens automatically.
 - **Move Suggest** is one popup page (`popup.html`) used as `default_popup` of both the
   main toolbar button (`action`) and the message header button (`message_display_action`).
-  `Alt+Shift+M` (`commands.onCommand`) and the message-list context menu (`menus`, after
+  `Ctrl+Alt+M` (`commands.onCommand`) and the message-list context menu (`menus`, after
   `mailTabs.setSelectedMessages`, because right-clicking does not select) call
   `action.openPopup` for a mail tab and fall back to `messageDisplayAction.openPopup`;
   neither requires a user gesture in Thunderbird 158. The popup reads the selection of

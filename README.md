@@ -14,7 +14,7 @@ draft, typically in just over a second (1.14 s median in the [model
 evaluation](#model-evaluation)). The quote and your signature stay untouched, and
 **Ctrl+Z** restores your notes.
 
-**Move Suggest** files the selected message: press **Alt+Shift+M** and a popup below its
+**Move Suggest** files the selected message: press **Ctrl+Alt+M** and a popup below its
 toolbar button suggests a folder with a short rationale. Press **Enter** to move the
 message, or type to pick another folder without waiting.
 
@@ -67,7 +67,7 @@ and a few keywords on the second. An answer that is not exactly one eligible fol
 as an error; you can still pick a folder yourself.
 
 ```text
-Select message ──▶ Alt+Shift+M ──▶ Popup below the toolbar button
+Select message ──▶ Ctrl+Alt+M ──▶ Popup below the toolbar button
                                           │
              Eligible folders + message ──┴──▶ Suggested folder + keywords
                                                          │
@@ -154,7 +154,7 @@ to the endpoint it was saved with.
 
 | Action | How |
 |---|---|
-| Suggest a folder | Select one message, press **Alt+Shift+M** or click **Move Suggest** (main toolbar, message header or message-list context menu) |
+| Suggest a folder | Select one message, press **Ctrl+Alt+M** or click **Move Suggest** (main toolbar, message header or message-list context menu) |
 | Move to the suggestion | **Enter** or click **Move**; the popup closes once Thunderbird confirms the move |
 | Pick another folder | Type in the filter box or use **Up/Down**, then **Enter**; no need to wait for the model, and no API key needed |
 | Close | **Esc** or click elsewhere; a running request is dropped |

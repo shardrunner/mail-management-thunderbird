@@ -10,7 +10,7 @@
   "action": {"default_title": "Move Suggest", "default_popup": "extensions/move/popup.html"},
   "message_display_action": {"default_title": "Move Suggest", "default_popup": "extensions/move/popup.html"},
   "commands": {
-    "move-suggest": {"suggested_key": {"default": "Alt+Shift+M"}, "description": "Suggest folder for selected message"}
+    "move-suggest": {"suggested_key": {"default": "Ctrl+Alt+M"}, "description": "Suggest folder for selected message"}
   },
   "options_ui": {"page": "shared/options.html", "open_in_tab": true}
 }

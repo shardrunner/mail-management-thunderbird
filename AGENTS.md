@@ -73,6 +73,9 @@ either `core.js`, or anything Thunderbird API-related; unit tests only use fakes
 - Follow the reopened-draft boundary restriction in `docs/ai/design.md`; the smoke checks
   both HTML and plain-text composers as well as reopened drafts.
 - `messages.move` can copy instead of moving, and its promise is not proof of success.
+- On Linux, Alt+Shift+letter is the access-key modifier (`ui.key.contentAccess`) and can
+  swallow an extension shortcut before its command fires; Ctrl+Shift+M is Thunderbird's
+  "Move to Folder Again". The smoke test presses the real Move shortcut.
 
 ## Safety for agents
 
