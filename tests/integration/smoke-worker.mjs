@@ -10,7 +10,7 @@ let child, client, server, log;
 const watchdog = setTimeout(() => { child?.kill('SIGKILL'); process.exitCode = 1; }, 110_000);
 try {
   report.artifacts = {};
-  for (const name of ['compose']) report.artifacts[`${name}.xpi`] = createHash('sha256').update(await readFile(`/work/${name}.xpi`)).digest('hex');
+  for (const name of ['compose', 'move']) report.artifacts[`${name}.xpi`] = createHash('sha256').update(await readFile(`/work/${name}.xpi`)).digest('hex');
   let resolveProbe;
   const probeResult = new Promise(resolve => { resolveProbe = resolve; });
   server = http.createServer(async (request, response) => {
@@ -135,10 +135,10 @@ try {
     })().then(done, error => done({ error: String(error) }));
   `);
   report.checks.install = {};
-  for (const name of ['compose']) {
+  for (const name of ['compose', 'move']) {
     const installed = await client.command('Addon:Install', { path: `/work/${name}.xpi`, temporary: true });
     const id = installed?.value ?? installed;
-    const expected = 'compose-assist@personal.invalid';
+    const expected = name === 'compose' ? 'compose-assist@personal.invalid' : 'move-suggest@personal.invalid';
     if (id !== expected) throw new Error(`Unexpected installed ${name} ID`);
     report.checks.install[name] = id;
   }
@@ -148,7 +148,7 @@ try {
     (async () => {
       const { ExtensionParent } = ChromeUtils.importESModule('resource://gre/modules/ExtensionParent.sys.mjs');
       const checks = {};
-      for (const id of ['compose-assist@personal.invalid']) {
+      for (const id of ['compose-assist@personal.invalid', 'move-suggest@personal.invalid']) {
         const extension = ExtensionParent.GlobalManager.getExtension(id);
         if (!extension) throw new Error('Packaged extension not active: ' + id);
         await extension.wakeupBackground();
@@ -157,9 +157,7 @@ try {
           message instanceof Ci.nsIScriptError && (message.flags & Ci.nsIScriptError.warningFlag) === 0 &&
           message.sourceName?.startsWith(extension.baseURI.spec));
         if (errors.length) throw new Error('Packaged background script errors: ' + id + ' (' + errors.length + ')');
-        const hasOptionsTab = [...(extension.views || [])].some(v => v.viewType === 'tab' && v.uri?.spec.endsWith('/shared/options.html'));
-        if (!hasOptionsTab) throw new Error('Welcome/settings page did not open on install: ' + id);
-        checks[id] = { context: true, scriptErrors: errors.length, optionsTab: hasOptionsTab };
+        checks[id] = { context: true, scriptErrors: errors.length };
       }
       return checks;
     })().then(done, error => done({ error: String(error) }));

@@ -6,6 +6,11 @@ const GUIDES = {
     'The text above the quote is replaced in place with the generated reply; quotes and your signature stay untouched.',
     'Press Ctrl+Z to undo, or edit the reply and press Alt+Shift+C again to refine.',
   ],
+  'Move Suggest': [
+    'Select one message in the message list (or open a message) and press Alt+Shift+M (or click Move Suggest in the toolbar, message header, or right-click menu).',
+    'An inline bar appears at the top of the message pane with the suggested folder and rationale (opening the message pane temporarily if hidden).',
+    'Press Enter to move immediately, type or use Up/Down arrows to pick another folder, or press Esc to close.',
+  ],
 };
 
 const $ = id => document.getElementById(id);

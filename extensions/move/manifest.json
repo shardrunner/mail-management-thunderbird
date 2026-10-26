@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "Move Suggest",
+  "version": "0.1.0",
+  "description": "Show an inline folder suggestion in the message view and move the selected message.",
+  "browser_specific_settings": {"gecko": {"id": "move-suggest@personal.invalid", "strict_min_version": "158.0"}},
+  "permissions": ["accountsRead", "messagesRead", "messagesMove", "scripting", "storage", "menus"],
+  "optional_host_permissions": ["https://*/*"],
+  "background": {"scripts": ["extensions/move/background.js"]},
+  "action": {"default_title": "Move Suggest"},
+  "message_display_action": {"default_title": "Move Suggest"},
+  "commands": {
+    "move-suggest": {"suggested_key": {"default": "Alt+Shift+M"}, "description": "Suggest folder for selected message"}
+  },
+  "options_ui": {"page": "shared/options.html", "open_in_tab": true}
+}

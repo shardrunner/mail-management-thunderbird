@@ -4,11 +4,11 @@ Agent guidance for this repository.
 
 ## Purpose
 
-A small Thunderbird 158.0+ (Linux, MV3) extension for personal use:
+Two small, independent Thunderbird 158.0+ (Linux, MV3) extensions for personal use:
 **Compose Assist** (draft or refine a reply in place from plain text written above the
-quote, with an inline status/error banner).
+quote, with an inline status/error banner) and **Move Suggest** (inline bar at the top of
+the message reading pane in the main window that suggests a folder and moves one message).
 Vanilla JavaScript, no dependencies, no build step beyond zipping.
-(Work on **Move Suggest** is tracked separately on the `feat/move-suggest` branch.)
 
 ## Read first
 
@@ -21,7 +21,7 @@ If this file conflicts with `docs/ai/design.md`, follow `design.md` and fix this
 
 ```sh
 npm test                           # unit + packaging tests; zip/unzip, no npm install
-npm run build                      # dist/compose.xpi (needs zip)
+npm run build                      # dist/compose.xpi, dist/move.xpi (needs zip)
 npm run test:thunderbird -- --run  # after build: isolated headless Thunderbird smoke test
 npm run evaluate -- --run           # live model evaluation on synthetic mail (billed)
 npm run judge -- --run --in=FILE    # blind two-judge quality rating of evaluated drafts (billed)
@@ -34,18 +34,22 @@ Cases and checks are in `scripts/eval-cases.mjs`; results are in
 `docs/ai/model-evaluation.md`. Both make real, billed provider requests with synthetic mail
 only; run them only with the user's approval.
 
-Run the smoke test after changing `extensions/compose/editor.js`, `extensions/compose/core.js`,
-or anything Thunderbird API-related; unit tests only use fakes.
+Run the smoke test after changing `extensions/compose/editor.js`, `extensions/move/banner.js`,
+either `core.js`, or anything Thunderbird API-related; unit tests only use fakes.
 
 ## Layout
 
 - `shared/`: settings and options page, provider request, MIME text extraction, limits.
-- `extensions/compose/`: `manifest.json`, `background.js` (registers compose action,
-  command, install/startup listeners), `core.js` (in-place capture, generation and
-  replacement), `policy.js` (prompt and schema), `editor.js` (injected into the composer for
-  capture/apply/banner).
-- `scripts/package.mjs`: `dist/compose.xpi` = LICENSE + `shared/` + `extensions/compose/`,
-  with the manifest at the archive root. Any file added there is shipped; `*.md` is excluded.
+  Copied into both XPIs; there is no runtime link between the extensions.
+- `extensions/compose/`: `manifest.json`, `background.js` (registers compose action and
+  command listeners), `core.js` (in-place capture, generation and replacement), `policy.js`
+  (prompt), `editor.js` (injected into the composer for capture/apply/banner).
+- `extensions/move/`: `manifest.json`, `background.js` (registers toolbar, message header,
+  command and menu listeners), `core.js` (selection, folder eligibility, suggestion and
+  move), `policy.js` (prompt), `banner.js` (inline bar injected into the
+  message reading pane).
+- `scripts/package.mjs`: each XPI = LICENSE + `shared/` + `extensions/<name>/`, with the
+  manifest at the archive root. Any file added there is shipped; `*.md` is excluded.
 - `tests/integration/`: sandboxed smoke runner and a test-only probe extension.
 
 ## Priorities
@@ -54,17 +58,20 @@ or anything Thunderbird API-related; unit tests only use fakes.
   windows, no handling for extreme edge cases, cross-context races or defense-in-depth.
   Prefer removing code over adding options.
 - **Keep the safeguards in `docs/ai/design.md`:** never decrypt mail, the synchronous
-  editor snapshot check before in-place replacement, session-only key by default (opt-in persistence), bound to its endpoint.
+  editor snapshot check before in-place replacement, filing-folder exclusions, move outcome
+  only from Thunderbird events, session-only key by default (opt-in persistence), bound to
+  its endpoint.
 
 ## Thunderbird pitfalls
 
-- `background.js` is a **classic script**: no `import`/`export` declarations. It must
-  register listeners synchronously at top level.
-- `editor.js` is serialized by `scripting.executeScript`: keep it self-contained, with no
-  imports or outer variables.
+- `background.js` files are **classic scripts**: no `import`/`export` declarations. They
+  must register listeners synchronously at top level.
+- `editor.js` and `banner.js` are serialized by `scripting.executeScript`: keep them
+  self-contained, with no imports or outer variables.
 - Read mail with `messages.getFull(id, { decrypt: false })`.
 - Follow the reopened-draft boundary restriction in `docs/ai/design.md`; the smoke checks
   both HTML and plain-text composers as well as reopened drafts.
+- `messages.move` can copy instead of moving, and its promise is not proof of success.
 
 ## Safety for agents
 

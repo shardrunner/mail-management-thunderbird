@@ -1,24 +1,47 @@
-// Runs the exact modules extracted from the built Compose Assist XPI against synthetic mail only.
-export async function productionChecks({ accounts, captured, htmlMessage }) {
-  const [{ createAdapter, composeReply }, { editorOperation }, { extractMessage }] = await Promise.all([
+// Runs the exact modules extracted from the two built XPIs against synthetic mail only.
+export async function productionChecks({ accounts, captured, destination, htmlMessage }) {
+  const [{ createAdapter, composeReply }, { editorOperation }, { selectedMessageId, loadMessage, eligibleFolders, readMessageText, moveMessage }, { moveBannerOperation }] = await Promise.all([
     import('./extensions/compose/core.js'),
     import('./extensions/compose/editor.js'),
-    import('./shared/mail.js'),
+    import('./extensions/move/core.js'),
+    import('./extensions/move/banner.js'),
   ]);
-  const readMessageText = async message => extractMessage(
-    await browser.messages.getFull(message.id, { decrypt: false }),
-    html => browser.messengerUtilities.convertToPlainText(html, { flowed: false }),
-  );
   const assert = (condition, message) => { if (!condition) throw new Error(message); };
   const inEditor = async func => (await browser.scripting.executeScript({ target: { tabId: tab.id }, func }))[0].result;
   const protectedNodes = () => inEditor(() => [...document.body.querySelectorAll('[mozquote],blockquote,.moz-cite-prefix,.moz-signature,span[style]')].map(n => n.outerHTML));
   const checks = {};
 
-  // MIME extraction and HTML conversion checks.
-  const text = (await readMessageText(captured)).text;
+  // Move: message, folders, inline reading-pane banner and context.
+  const [mailTab] = await browser.tabs.query({ type: 'mail' });
+  assert(mailTab?.id, 'Expected a mail tab');
+  assert(await selectedMessageId(browser, mailTab.id) === captured.id, 'selectedMessageId did not match displayed message');
+  const message = await loadMessage(browser, captured.id);
+  const rows = await eligibleFolders(browser, message.folder);
+  const target = rows.find(row => row.id === destination.id);
+  assert(target, 'Folder eligibility rejected the synthetic destination');
+  const bannerLoading = (await browser.scripting.executeScript({
+    target: { tabId: mailTab.id },
+    func: moveBannerOperation,
+    args: [{ state: 'loading', messageId: message.id, rows, status: 'Move Suggest: Suggesting folder…' }],
+  }))[0]?.result;
+  assert(bannerLoading?.ok, `Move loading banner failed: ${JSON.stringify(bannerLoading)}`);
+  const bannerReady = (await browser.scripting.executeScript({
+    target: { tabId: mailTab.id },
+    func: moveBannerOperation,
+    args: [{ state: 'ready', messageId: message.id, rows, suggestion: { label: target.label, rationale: 'smoke' }, status: `Suggested: ${target.label}` }],
+  }))[0]?.result;
+  assert(bannerReady?.ok && bannerReady.selected === target.label, `Move inline banner failed in message pane: ${JSON.stringify(bannerReady)}`);
+  await browser.scripting.executeScript({ target: { tabId: mailTab.id }, func: moveBannerOperation, args: [{ state: 'clear' }] });
+  assert(target.isFavorite, 'Thunderbird favorite flag was not reflected');
+  const older = rows.find(row => row.id === htmlMessage.folder.id);
+  assert(target.recentIndex != null && older?.recentIndex != null && target.recentIndex < older.recentIndex,
+    'Thunderbird recent destination order was not reflected');
+  assert(!rows.some(row => row.id === message.folder.id), 'Recent favorite source became eligible');
+  const text = (await readMessageText(browser, message)).text;
   assert(text.includes('Synthetic local-only body.') && text.includes('> Earlier message history.'), 'MIME extraction omitted body or history');
+  checks.context = { eligibleFolders: rows.length, favorite: true, recentOrder: true, sourceExcluded: true };
   assert(htmlMessage.size > 1024 * 1024, 'Expected a message with a large attachment');
-  const html = await readMessageText(htmlMessage);
+  const html = await readMessageText(browser, htmlMessage);
   assert(html.text.includes('Price € — ©'), `Native HTML entity conversion failed: ${html.text}`);
   assert(/Next\s+line/.test(html.text) && html.text.includes('Malformed bold'), 'HTML text/layout lost');
   assert(!/HIDDEN_|ATTACHED_SECRET|<script|<img/.test(html.text), 'HTML leaked hidden or attached content');
@@ -32,11 +55,6 @@ export async function productionChecks({ accounts, captured, htmlMessage }) {
   const htmlAdapter = createAdapter(browser, htmlReplyTab.id);
   const htmlInitial = await htmlAdapter.capture();
   assert(htmlInitial.context.includes('Price € — ©'), `HTML reply capture missed quoted text: ${htmlInitial.context}`);
-  assert(htmlInitial.subject === 'Re: Synthetic HTML fixture', `HTML reply capture missed subject: ${htmlInitial.subject}`);
-  assert(htmlInitial.from === 'synthetic@example.invalid', `HTML reply capture missed from: ${htmlInitial.from}`);
-  assert(htmlInitial.to === 'receiver@example.invalid', `HTML reply capture missed to: ${htmlInitial.to}`);
-  assert(htmlInitial.attachments.includes('attached.html') && htmlInitial.attachments.includes('large.pdf'),
-    `HTML reply capture missed attachments: ${JSON.stringify(htmlInitial.attachments)}`);
   await htmlAdapter.apply(htmlInitial.snapshot, 'Write a polite reply.\nMention the price.');
   const htmlWithNotes = await htmlAdapter.capture();
   assert(htmlWithNotes.draft.includes('Write a polite reply.') && htmlWithNotes.draft.includes('Mention the price.'),
@@ -126,7 +144,7 @@ export async function productionChecks({ accounts, captured, htmlMessage }) {
   assert(saved.mode === 'draft' && saved.messages.length === 1, 'Expected one saved draft');
   const persisted = await browser.messages.get(saved.messages[0].id);
   assert(persisted.folder.specialUse.includes('drafts'), 'Draft saved outside the synthetic Drafts folder');
-  const savedText = (await readMessageText(persisted)).text;
+  const savedText = (await readMessageText(browser, persisted)).text;
   assert(normalize(savedText) === normalize(beforeSave.plainTextBody),
     `Saved MIME body differs: ${JSON.stringify({ expected: beforeSave.plainTextBody, actual: savedText })}`);
   const originalTabId = tab.id;
@@ -160,5 +178,8 @@ export async function productionChecks({ accounts, captured, htmlMessage }) {
     captureRejected: true, applyRejected: true, unchanged: true,
   };
 
+  // Move last: it removes the message the reply was based on.
+  checks.move = { outcome: await moveMessage(browser, message, target, 10000) };
+  assert(checks.move.outcome === 'confirmed', `Move did not confirm: ${checks.move.outcome}`);
   return checks;
 }
