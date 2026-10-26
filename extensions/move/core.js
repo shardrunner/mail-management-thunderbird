@@ -7,7 +7,6 @@ import { SYSTEM, makePrompt } from './policy.js';
 const EXCLUDED_ROLES = new Set(['inbox', 'sent', 'drafts', 'templates', 'outbox', 'junk', 'trash']);
 
 export const OUTCOMES = {
-  confirmed: 'Moved. Thunderbird confirmed the move.',
   copied: 'Thunderbird reported a copy, not a move. The original may still be in the source folder.',
   uncertain: 'Move sent, but Thunderbird did not confirm it in time. Check the folders before trying again.',
 };
@@ -107,9 +106,6 @@ export function orderedFolders(rows, suggested, search = '') {
 // The first matching event determines 'confirmed' or 'copied'; otherwise the
 // outcome is 'uncertain' 15 s after dispatch. A resolved move promise is not proof.
 export async function moveMessage(api, message, target, timeoutMs = 15000) {
-  const current = await api.messages.get(message.id);
-  if (current?.folder?.id !== message.folder.id) throw new Error('The message was moved or deleted meanwhile. Reopen Move Suggest.');
-
   let observed, failed;
   const evidence = new Promise((resolve, reject) => { observed = resolve; failed = reject; });
   const observe = kind => (original, result) => {

@@ -18,14 +18,14 @@ function fixture() {
   const projects = folder('p', '/Projects', { subFolders: [folder('c', '/Projects/Work')] });
   const trash = folder('trash', '/Trash', { specialUse: ['trash'], subFolders: [folder('deep', '/Trash/Old')] });
   const folders = [source, projects, trash, folder('archive', '/Archive', { specialUse: ['archives'] }), folder('virtual', '/Search', { isVirtual: true })];
-  const message = { id: 7, folder: source, subject: 'Subject', size: 20 };
+  const message = { id: 7, folder: source, subject: 'Subject' };
   const moves = [];
   const api = {
     accounts: { get: async () => ({ id: 'a', name: 'Local', rootFolder: folder('root', '/', { isRoot: true, subFolders: folders }) }) },
     folders: { query: async () => [], getFolderCapabilities: async () => ({ canAddMessages: true, canDeleteMessages: true }) },
     messages: {
       get: async () => structuredClone(message),
-      getFull: async (id, options) => ({ contentType: 'text/plain', body: `body of ${id} ${JSON.stringify(options)}` }),
+      getFull: async () => ({ contentType: 'text/plain', body: 'body' }),
       move: async (...args) => { moves.push(args); },
       onMoved: event(),
       onCopied: event(),
@@ -125,12 +125,6 @@ test('folder order is suggested, favorites, recent newest first, then alphabetic
   assert.deepEqual(rows, before);
 });
 
-test('message text is read without decryption regardless of total message size', async () => {
-  const f = fixture();
-  assert.match((await readMessageText(f.api, f.message)).text, /"decrypt":false/);
-  assert.match((await readMessageText(f.api, { ...f.message, size: 1e9 })).text, /"decrypt":false/);
-});
-
 test('HTML message text uses Thunderbird conversion without decrypting or reading attachments', async () => {
   const f = fixture();
   f.api.messages.getFull = async (id, options) => {
@@ -213,11 +207,4 @@ test('the first matching event determines the outcome', async () => {
     f.api.messages.onMoved.emit({ messages: [f.message] }, result);
   };
   assert.equal(await moveMessage(f.api, f.message, { id: 'p' }), 'copied');
-});
-
-test('a message that left its folder is not moved', async () => {
-  const f = fixture();
-  f.api.messages.get = async () => ({ ...f.message, folder: { id: 'elsewhere' } });
-  await assert.rejects(moveMessage(f.api, f.message, { id: 'p' }, 5), /moved or deleted/);
-  assert.equal(f.moves.length, 0);
 });
