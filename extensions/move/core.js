@@ -48,7 +48,8 @@ export async function loadMessage(api, id) {
   return message;
 }
 
-// Writable filing folders of the source account, excluding the source itself.
+// Writable filing folders of the source account, excluding the source itself. Labels
+// join display names: an IMAP folder's path is the raw server path (modified UTF-7).
 export async function eligibleFolders(api, source) {
   const account = await api.accounts.get(source.accountId, true);
   if (!account) throw new Error('Source account not found.');
@@ -57,19 +58,20 @@ export async function eligibleFolders(api, source) {
   });
   const recentIndexes = new Map(recent.map((folder, index) => [folder.id, index]));
   const rows = [];
-  async function visit(folder) {
+  async function visit(folder, parentLabel) {
     for (const child of folder.subFolders ?? []) {
       if (!isFilingFolder(child)) continue;
+      const label = `${parentLabel}/${child.name}`;
       if (child.id !== source.id && (await api.folders.getFolderCapabilities(child.id)).canAddMessages) {
         rows.push({
-          id: child.id, label: `${account.name}${child.path}`, isFavorite: !!child.isFavorite,
+          id: child.id, label, isFavorite: !!child.isFavorite,
           recentIndex: recentIndexes.get(child.id) ?? null,
         });
       }
-      await visit(child);
+      await visit(child, label);
     }
   }
-  await visit(account.rootFolder);
+  await visit(account.rootFolder, account.name);
   return rows;
 }
 

@@ -13,7 +13,7 @@ function event() {
 }
 
 function fixture() {
-  const folder = (id, path, extra = {}) => ({ id, path, accountId: 'a', specialUse: [], ...extra });
+  const folder = (id, path, extra = {}) => ({ id, path, name: path.split('/').pop(), accountId: 'a', specialUse: [], ...extra });
   const source = folder('src', '/Inbox', { specialUse: ['inbox'], subFolders: [folder('inboxChild', '/Inbox/Sub')] });
   const projects = folder('p', '/Projects', { subFolders: [folder('c', '/Projects/Work')] });
   const trash = folder('trash', '/Trash', { specialUse: ['trash'], subFolders: [folder('deep', '/Trash/Old')] });
@@ -65,6 +65,14 @@ test('eligible folders include parents and archive, exclude source, special subt
   const f = fixture();
   const rows = await eligibleFolders(f.api, f.message.folder);
   assert.deepEqual(rows.map(r => r.label).sort(), ['Local/Archive', 'Local/Projects', 'Local/Projects/Work']);
+});
+
+test('labels are built from display names, not raw IMAP paths', async () => {
+  const f = fixture();
+  const sub = { id: 'u', path: '/INBOX.&AMQ-rger & Co.Unter &ANw-', name: 'Unter Ü', specialUse: [] };
+  const umlaut = { id: 'x', path: '/INBOX.&AMQ-rger & Co', name: 'Ärger & Co', specialUse: [], subFolders: [sub] };
+  f.api.accounts.get = async () => ({ id: 'a', name: 'Mail', rootFolder: { subFolders: [umlaut] } });
+  assert.deepEqual((await eligibleFolders(f.api, f.message.folder)).map(r => r.label), ['Mail/Ärger & Co', 'Mail/Ärger & Co/Unter Ü']);
 });
 
 test('eligible folders fetch only the source account and reject a missing account', async () => {

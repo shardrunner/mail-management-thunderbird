@@ -74,6 +74,9 @@ tests/                node:test unit tests; tests/integration is the isolated Th
   eligible-folder tree walk. No separate history store, new permissions, or history sent
   to the provider; destination values remain the original folder labels. Folder queries
   cannot replace ancestor checks for excluded subtrees.
+- Folder labels are the account name plus the folders' display names (`MailFolder.name`)
+  along the tree walk. `MailFolder.path` is not shown: for IMAP it is the raw server path
+  (modified UTF-7, server delimiter), e.g. `&AMQ-rger` for `Ärger`.
 - Toolbar and menu selections are paginated
   [`MessageList`s](https://webextension-api.thunderbird.net/en/mv3/guides/messageLists.html).
   Read until the list ends or a second message is found, then abort any remaining list.

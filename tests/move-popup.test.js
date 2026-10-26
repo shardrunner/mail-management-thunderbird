@@ -53,7 +53,7 @@ function setup({
     mailTabs: { getSelectedMessages: async () => ({ messages: selected }) },
     messageDisplay: { getDisplayedMessage: async () => message },
     storage: { local: { get: async () => storage.local }, session: { get: async () => storage.session } },
-    accounts: { get: async () => ({ id: 'a', name: 'Local', rootFolder: { subFolders: [folder, { id: 'p', path: '/Projects' }, { id: 'o', path: '/Other', isFavorite: true }] } }) },
+    accounts: { get: async () => ({ id: 'a', name: 'Local', rootFolder: { subFolders: [folder, { id: 'p', name: 'Projects' }, { id: 'o', name: 'Other', isFavorite: true }] } }) },
     folders: { query: async () => [], getFolderCapabilities: async () => ({ canAddMessages: true, canDeleteMessages: true }) },
     messages: {
       get: async () => message,
