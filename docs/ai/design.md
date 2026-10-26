@@ -71,8 +71,9 @@ tests/                node:test unit tests; tests/integration is the isolated Th
 - Move Suggest reads favorites from `MailFolder.isFavorite` and queries the source
   account's `lastUsedAsDestination` history. This metadata only annotates the existing
   eligible-folder tree walk. No separate history store, new permissions, or history sent
-  to the provider; destination values remain the original folder labels. Folder queries
-  cannot replace ancestor checks for excluded subtrees.
+  to the provider; destination values remain the original folder labels. Writable
+  folders come from one `folders.query({ canAddMessages: true })` for the account; folder
+  queries cannot replace ancestor checks for excluded subtrees.
 - Folder labels are the account name plus the folders' display names (`MailFolder.name`)
   along the tree walk. `MailFolder.path` is not shown: for IMAP it is the raw server path
   (modified UTF-7, server delimiter), e.g. `&AMQ-rger` for `Ärger`.

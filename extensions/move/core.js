@@ -52,16 +52,18 @@ export async function loadMessage(api, id) {
 export async function eligibleFolders(api, source) {
   const account = await api.accounts.get(source.accountId, true);
   if (!account) throw new Error('Source account not found.');
-  const recent = await api.folders.query({
-    accountId: source.accountId, lastUsedAsDestination: { recent: true }, sort: 'lastUsedAsDestination',
-  });
+  const [writable, recent] = await Promise.all([
+    api.folders.query({ accountId: source.accountId, canAddMessages: true }),
+    api.folders.query({ accountId: source.accountId, lastUsedAsDestination: { recent: true }, sort: 'lastUsedAsDestination' }),
+  ]);
+  const writableIds = new Set(writable.map(folder => folder.id));
   const recentIndexes = new Map(recent.map((folder, index) => [folder.id, index]));
   const rows = [];
   async function visit(folder, parentLabel) {
     for (const child of folder.subFolders ?? []) {
       if (!isFilingFolder(child)) continue;
       const label = `${parentLabel}/${child.name}`;
-      if (child.id !== source.id && (await api.folders.getFolderCapabilities(child.id)).canAddMessages) {
+      if (child.id !== source.id && writableIds.has(child.id)) {
         rows.push({
           id: child.id, label, isFavorite: !!child.isFavorite,
           recentIndex: recentIndexes.get(child.id) ?? null,

@@ -54,7 +54,7 @@ function setup({
     messageDisplay: { getDisplayedMessage: async () => message },
     storage: { local: { get: async () => storage.local }, session: { get: async () => storage.session } },
     accounts: { get: async () => ({ id: 'a', name: 'Local', rootFolder: { subFolders: [folder, { id: 'p', name: 'Projects' }, { id: 'o', name: 'Other', isFavorite: true }] } }) },
-    folders: { query: async () => [], getFolderCapabilities: async () => ({ canAddMessages: true, canDeleteMessages: true }) },
+    folders: { query: async q => q.canAddMessages ? [{ id: 'p' }, { id: 'o' }] : [], getFolderCapabilities: async () => ({ canDeleteMessages: true }) },
     messages: {
       get: async () => message,
       getFull: async () => ({ contentType: 'text/plain', body: 'body' }),

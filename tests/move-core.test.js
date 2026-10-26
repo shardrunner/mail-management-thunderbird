@@ -12,6 +12,8 @@ function event() {
   };
 }
 
+const flatten = folder => [folder, ...(folder.subFolders ?? []).flatMap(flatten)];
+
 function fixture() {
   const folder = (id, path, extra = {}) => ({ id, path, name: path.split('/').pop(), accountId: 'a', specialUse: [], ...extra });
   const source = folder('src', '/Inbox', { specialUse: ['inbox'], subFolders: [folder('inboxChild', '/Inbox/Sub')] });
@@ -22,7 +24,8 @@ function fixture() {
   const moves = [];
   const api = {
     accounts: { get: async () => ({ id: 'a', name: 'Local', rootFolder: folder('root', '/', { isRoot: true, subFolders: folders }) }) },
-    folders: { query: async () => [], getFolderCapabilities: async () => ({ canAddMessages: true, canDeleteMessages: true }) },
+    // Every folder of the requested account is writable unless a test says otherwise.
+    folders: { query: async q => q.canAddMessages ? flatten((await api.accounts.get(q.accountId, true)).rootFolder) : [], getFolderCapabilities: async () => ({ canDeleteMessages: true }) },
     messages: {
       get: async () => structuredClone(message),
       getFull: async () => ({ contentType: 'text/plain', body: 'body' }),
@@ -90,7 +93,8 @@ test('eligible folders fetch only the source account and reject a missing accoun
 
 test('eligible folders require add capability', async () => {
   const f = fixture();
-  f.api.folders.getFolderCapabilities = async id => ({ canAddMessages: id !== 'p' });
+  const query = f.api.folders.query;
+  f.api.folders.query = async q => (await query(q)).filter(folder => folder.id !== 'p');
   assert.ok(!(await eligibleFolders(f.api, f.message.folder)).some(r => r.id === 'p'));
 });
 
@@ -99,8 +103,10 @@ test('favorites and recent history annotate only eligible folders', async () => 
   const account = await f.api.accounts.get();
   for (const folder of account.rootFolder.subFolders) folder.isFavorite = true;
   f.api.accounts.get = async () => account;
-  f.api.folders.query = async query => {
-    assert.deepEqual(query, { accountId: 'a', lastUsedAsDestination: { recent: true }, sort: 'lastUsedAsDestination' });
+  const query = f.api.folders.query;
+  f.api.folders.query = async q => {
+    if (q.canAddMessages) return query(q);
+    assert.deepEqual(q, { accountId: 'a', lastUsedAsDestination: { recent: true }, sort: 'lastUsedAsDestination' });
     return ['trash', 'deep', 'src', 'inboxChild', 'virtual', 'other-account', 'archive', 'p'].map(id => ({ id }));
   };
   const rows = await eligibleFolders(f.api, f.message.folder);
