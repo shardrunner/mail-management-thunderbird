@@ -2,9 +2,9 @@ import { loadSettings, loadApiKey, isApiKeyRemembered, saveSettings, validateSet
 
 const GUIDES = {
   'Compose Assist': [
-    'In a reply composer, write plain-text instructions or draft notes above the quote and press Alt+Shift+C (or click Compose Assist in the toolbar).',
+    'In a reply composer, write plain-text instructions or draft notes above the quote and press Ctrl+Alt+C (or click Compose Assist in the toolbar).',
     'The text above the quote is replaced in place with the generated reply; quotes and your signature stay untouched.',
-    'Press Ctrl+Z to undo, or edit the reply and press Alt+Shift+C again to refine.',
+    'Press Ctrl+Z to undo, or edit the reply and press Ctrl+Alt+C again to refine.',
   ],
   'Move Suggest': [
     'Select one message in the message list (or open a message) and press Ctrl+Alt+M (or click Move Suggest in the toolbar, message header, or right-click menu).',

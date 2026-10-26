@@ -44,7 +44,7 @@ scripts/package.mjs   zips LICENSE + shared/ + extensions/<name>/ with the manif
 tests/                node:test unit tests; tests/integration is the isolated Thunderbird smoke
 ```
 
-- **Compose Assist** operates in place inside the composer window. Pressing `Alt+Shift+C`
+- **Compose Assist** operates in place inside the composer window. Pressing `Ctrl+Alt+C`
   (or clicking the compose toolbar button) captures the plain text written above the quote
   and the quoted context, shows a Shadow DOM status banner on `document.documentElement`
   (outside `document.body`, so `document.body.innerHTML` and `isModified` are untouched),

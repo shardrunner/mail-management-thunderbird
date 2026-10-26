@@ -167,6 +167,37 @@ try {
     const timer = setTimeout(() => reject(new Error('Instrumented extension report timeout')), 45000); timer.unref();
   })]);
   if (!report.checks.probe.ok) throw new Error(`Probe failed: ${report.checks.probe.error}`);
+  // The real Ctrl+Alt+C in a composer the probe left open reaches the compose-assist command
+  // (recorded only: without an API key the command would open the Settings tab).
+  report.checks.composeShortcut = await execute(`
+    const done = arguments[arguments.length - 1];
+    (async () => {
+      const { ExtensionParent } = ChromeUtils.importESModule('resource://gre/modules/ExtensionParent.sys.mjs');
+      const shortcuts = ExtensionParent.GlobalManager.getExtension('compose-assist@personal.invalid').shortcuts;
+      const win = Services.wm.getMostRecentWindow('msgcompose');
+      if (!win) throw new Error('Compose shortcut: no composer open');
+      win.focus();
+      for (const deadline = Date.now() + 15000; Services.focus.activeWindow !== win;) {
+        if (Date.now() > deadline) throw new Error('Compose shortcut: composer not focused');
+        await new Promise(resolve => win.setTimeout(resolve, 100));
+      }
+      win.document.getElementById('messageEditor').focus();
+      const fired = [];
+      shortcuts.onCommand = name => fired.push(name);
+      try {
+        const keys = Cc['@mozilla.org/text-input-processor;1'].createInstance(Ci.nsITextInputProcessor);
+        if (!keys.beginInputTransactionForTests(win)) throw new Error('Compose shortcut: no input transaction');
+        const modifiers = [['Control', 'ControlLeft', 17], ['Alt', 'AltLeft', 18]].map(([key, code, keyCode]) => new win.KeyboardEvent('', { key, code, keyCode }));
+        const letter = new win.KeyboardEvent('', { key: 'c', code: 'KeyC', keyCode: 67 });
+        for (const modifier of modifiers) keys.keydown(modifier);
+        keys.keydown(letter); keys.keyup(letter);
+        for (const modifier of modifiers.reverse()) keys.keyup(modifier);
+        await new Promise(resolve => win.setTimeout(resolve, 500));
+      } finally { delete shortcuts.onCommand; }
+      if (fired.join() !== 'compose-assist') throw new Error('Compose shortcut: command not fired: ' + JSON.stringify(fired));
+      return { fired: true };
+    })().then(done, error => done({ error: String(error) }));
+  `);
   // Move Suggest popup end to end, without an API key: the probe filed the synthetic message
   // in SmokeDestination. Ctrl+Alt+M opens the toolbar popup without a click; typing
   // a filter and Enter moves the message back, and a confirmed move closes the popup.

@@ -11,7 +11,7 @@
   "background": { "scripts": ["extensions/compose/background.js"] },
   "compose_action": { "default_title": "Compose Assist" },
   "commands": {
-    "compose-assist": { "suggested_key": { "default": "Alt+Shift+C" }, "description": "Draft or refine reply in place" }
+    "compose-assist": { "suggested_key": { "default": "Ctrl+Alt+C" }, "description": "Draft or refine reply in place" }
   },
   "options_ui": { "page": "shared/options.html", "open_in_tab": true }
 }

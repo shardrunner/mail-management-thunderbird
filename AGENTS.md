@@ -75,7 +75,8 @@ either `core.js`, or anything Thunderbird API-related; unit tests only use fakes
 - `messages.move` can copy instead of moving, and its promise is not proof of success.
 - On Linux, Alt+Shift+letter is the access-key modifier (`ui.key.contentAccess`) and can
   swallow an extension shortcut before its command fires; Ctrl+Shift+M is Thunderbird's
-  "Move to Folder Again". The smoke test presses the real Move shortcut.
+  "Move to Folder Again". Both extensions use Ctrl+Alt; the smoke test presses both real
+  shortcuts.
 
 ## Safety for agents
 

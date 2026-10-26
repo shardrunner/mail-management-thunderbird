@@ -33,11 +33,11 @@ Use a separate profile (`thunderbird --no-remote --profile <dir>`) with test mai
 1. Settings: save endpoint/model/key; the endpoint access prompt appears; the key is gone
    after a Thunderbird restart.
 2. Compose: write instructions above the quote in a reply (HTML or plain-text composer)
-   and press `Alt+Shift+C`; the inline banner shows `Generating reply…`, then the
+   and press `Ctrl+Alt+C`; the inline banner shows `Generating reply…`, then the
    instructions are replaced in place by the generated reply; quotes, signature,
    recipients, subject and attachments stay unchanged. Press `Ctrl+Z` to verify undo
    restores your instructions. Add a refinement instruction in the reply area and press
-   `Alt+Shift+C` again.
+   `Ctrl+Alt+C` again.
 3. Compose: type in the composer while a request is in flight → replacement refuses and
    shows the error in the inline banner without overwriting your edits. Empty reply area
    or unusual quote layouts also show an inline error banner at the top of the composer.
@@ -54,6 +54,6 @@ Use a separate profile (`thunderbird --no-remote --profile <dir>`) with test mai
    to another folder, then trigger Move Suggest. Check the labels/order, search, and
    manual selection without an API key. Special folders and their subfolders remain
    excluded.
-7. Shortcuts: `Alt+Shift+C` in a composer runs in-place Compose Assist; `Ctrl+Alt+M` in
+7. Shortcuts: `Ctrl+Alt+C` in a composer runs in-place Compose Assist; `Ctrl+Alt+M` in
    the main window opens the Move Suggest popup. Reassign both in Manage Extension
    Shortcuts and check the new keys.

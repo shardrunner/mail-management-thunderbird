@@ -9,7 +9,7 @@
 Two small, independent, keyboard-first Thunderbird extensions.
 
 **Compose Assist** turns rough notes into a draft reply directly inside the composer. Write
-a few lines above the quote and press **Alt+Shift+C**: the notes are replaced in place by a
+a few lines above the quote and press **Ctrl+Alt+C**: the notes are replaced in place by a
 draft, typically in just over a second (1.14 s median in the [model
 evaluation](#model-evaluation)). The quote and your signature stay untouched, and
 **Ctrl+Z** restores your notes.
@@ -140,9 +140,9 @@ to the endpoint it was saved with.
 
 | Action | How |
 |---|---|
-| Draft a reply | Write notes above the quote, press **Alt+Shift+C** or click **Compose Assist** |
-| Refine the reply | Edit the text or add follow-up instructions, press **Alt+Shift+C** again |
-| Cancel a running request | Press **Alt+Shift+C** again or click **Cancel** in the banner |
+| Draft a reply | Write notes above the quote, press **Ctrl+Alt+C** or click **Compose Assist** |
+| Refine the reply | Edit the text or add follow-up instructions, press **Ctrl+Alt+C** again |
+| Cancel a running request | Press **Ctrl+Alt+C** again or click **Cancel** in the banner |
 | Undo | **Ctrl+Z** restores the previous text |
 
 - If you type in the composer while a request is running, the reply is not inserted, so
