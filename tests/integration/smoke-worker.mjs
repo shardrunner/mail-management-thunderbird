@@ -169,10 +169,25 @@ try {
     const timer = setTimeout(() => reject(new Error('Instrumented extension report timeout')), 45000); timer.unref();
   })]);
   if (!report.checks.probe.ok) throw new Error(`Probe failed: ${report.checks.probe.error}`);
+  // Real key events, as a user types them: Alt+Shift+letter is the Linux access-key modifier
+  // and never reached the command, which calling shortcuts.onCommand directly did not catch.
+  const pressCtrlAlt = `
+    const pressCtrlAlt = (win, letter) => {
+      const keys = Cc['@mozilla.org/text-input-processor;1'].createInstance(Ci.nsITextInputProcessor);
+      if (!keys.beginInputTransactionForTests(win)) throw new Error('No input transaction for Ctrl+Alt+' + letter);
+      const modifiers = [['Control', 'ControlLeft', 17], ['Alt', 'AltLeft', 18]].map(([key, code, keyCode]) => new win.KeyboardEvent('', { key, code, keyCode }));
+      const upper = letter.toUpperCase();
+      const event = new win.KeyboardEvent('', { key: letter, code: 'Key' + upper, keyCode: upper.charCodeAt(0) });
+      for (const modifier of modifiers) keys.keydown(modifier);
+      keys.keydown(event); keys.keyup(event);
+      for (const modifier of modifiers.reverse()) keys.keyup(modifier);
+    };
+  `;
   // The real Ctrl+Alt+C in a composer the probe left open reaches the compose-assist command
   // (recorded only: without an API key the command would open the Settings tab).
   report.checks.composeShortcut = await execute(`
     const done = arguments[arguments.length - 1];
+    ${pressCtrlAlt}
     (async () => {
       const { ExtensionParent } = ChromeUtils.importESModule('resource://gre/modules/ExtensionParent.sys.mjs');
       const shortcuts = ExtensionParent.GlobalManager.getExtension('compose-assist@personal.invalid').shortcuts;
@@ -187,13 +202,7 @@ try {
       const fired = [];
       shortcuts.onCommand = name => fired.push(name);
       try {
-        const keys = Cc['@mozilla.org/text-input-processor;1'].createInstance(Ci.nsITextInputProcessor);
-        if (!keys.beginInputTransactionForTests(win)) throw new Error('Compose shortcut: no input transaction');
-        const modifiers = [['Control', 'ControlLeft', 17], ['Alt', 'AltLeft', 18]].map(([key, code, keyCode]) => new win.KeyboardEvent('', { key, code, keyCode }));
-        const letter = new win.KeyboardEvent('', { key: 'c', code: 'KeyC', keyCode: 67 });
-        for (const modifier of modifiers) keys.keydown(modifier);
-        keys.keydown(letter); keys.keyup(letter);
-        for (const modifier of modifiers.reverse()) keys.keyup(modifier);
+        pressCtrlAlt(win, 'c');
         await new Promise(resolve => win.setTimeout(resolve, 500));
       } finally { delete shortcuts.onCommand; }
       if (fired.join() !== 'compose-assist') throw new Error('Compose shortcut: command not fired: ' + JSON.stringify(fired));
@@ -205,6 +214,7 @@ try {
   // a filter and Enter moves the message back, and a confirmed move closes the popup.
   report.checks.movePopup = await execute(`
     const done = arguments[arguments.length - 1];
+    ${pressCtrlAlt}
     (async () => {
       const { ExtensionParent } = ChromeUtils.importESModule('resource://gre/modules/ExtensionParent.sys.mjs');
       const { ViewPopup } = ChromeUtils.importESModule('resource:///modules/ExtensionPopups.sys.mjs');
@@ -226,16 +236,8 @@ try {
       about3Pane.displayFolder(filed.URI);
       await until(() => about3Pane.gDBView?.rowCount === 1, 'filed message not listed');
       about3Pane.threadTree.selectedIndex = 0;
-      // Press the real shortcut: Alt+Shift+letter is the Linux access-key modifier and never
-      // reached the command, which calling shortcuts.onCommand directly did not catch.
       about3Pane.threadTree.focus();
-      const keys = Cc['@mozilla.org/text-input-processor;1'].createInstance(Ci.nsITextInputProcessor);
-      if (!keys.beginInputTransactionForTests(win)) throw new Error('Move popup: no input transaction');
-      const modifiers = [['Control', 'ControlLeft', 17], ['Alt', 'AltLeft', 18]].map(([key, code, keyCode]) => new win.KeyboardEvent('', { key, code, keyCode }));
-      const letter = new win.KeyboardEvent('', { key: 'm', code: 'KeyM', keyCode: 77 });
-      for (const modifier of modifiers) keys.keydown(modifier);
-      keys.keydown(letter); keys.keyup(letter);
-      for (const modifier of modifiers.reverse()) keys.keyup(modifier);
+      pressCtrlAlt(win, 'm');
       const popup = () => ViewPopup.for(extension, win);
       await until(() => popup()?.browser?.currentURI?.spec.endsWith('/extensions/move/popup.html'), 'not opened');
       await new Promise(resolve => win.setTimeout(resolve, 2000)); // folders load, key error shown

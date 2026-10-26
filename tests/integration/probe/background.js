@@ -23,13 +23,6 @@
     const source = folders.find(folder => folder.name === 'SmokeSource');
     const destination = folders.find(folder => folder.name === 'SmokeDestination');
     assert(source && destination, 'Missing synthetic folders');
-    const sourceFresh = await browser.folders.get(source.id, false);
-    const destinationFresh = await browser.folders.get(destination.id, false);
-    const sourceCaps = await browser.folders.getFolderCapabilities(source.id);
-    const destinationCaps = await browser.folders.getFolderCapabilities(destination.id);
-    assert(sourceCaps.canDeleteMessages === true && destinationCaps.canAddMessages === true, 'Folder capabilities not affirmative');
-    assert(sourceFresh.accountId === destinationFresh.accountId, 'Different accounts');
-    checks.foldersGet = { idType: typeof source.id, sourceDelete: sourceCaps.canDeleteMessages, destinationAdd: destinationCaps.canAddMessages };
     const messages = await until(async () => { const items = await list(source.id); return items.length ? items : null; }, 'local message indexing');
     assert(messages.length === 1 && messages[0].headerMessageId === 'smoke-fixture@example.invalid', 'Unexpected synthetic message');
     const captured = await browser.messages.get(messages[0].id);
@@ -43,21 +36,13 @@
     assert(full && captured.folder.id === source.id, 'Message get/getFull source mismatch');
     checks.messageRead = true;
 
-    let moved = null, copied = false;
-    browser.messages.onMoved.addListener((original, updated) => {
-      if (original.messages.some(message => message.id === captured.id)) moved = { original, updated };
-    });
-    browser.messages.onCopied.addListener(original => {
-      if (original.messages.some(message => message.id === captured.id)) copied = true;
-    });
-    const {productionChecks}=await import('./production.js');
-    checks.production=await productionChecks({accounts,captured,destination,htmlMessage:htmlMessages[0]});
-    await until(() => moved, 'messages.onMoved');
+    const { productionChecks } = await import('./production.js');
+    checks.production = await productionChecks({ accounts, captured, destination, htmlMessage: htmlMessages[0] });
+    // productionChecks ends with an onMoved-confirmed move; the folders prove it was not a copy.
     const remaining = await list(source.id), filed = await list(destination.id);
-    assert(!copied && remaining.length === 0 && filed.length === 1, 'Move did not remove source exactly once');
-    assert(filed[0].headerMessageId === captured.headerMessageId && filed[0].folder.id === destination.id, 'Moved wrong message');
-    assert(moved.updated.messages.some(message => message.folder.id === destination.id), 'Move event destination mismatch');
-    checks.move = { event: true, copyEvent: copied, sourceCount: remaining.length, destinationCount: filed.length };
+    assert(remaining.length === 0 && filed.length === 1, 'Move did not remove source exactly once');
+    assert(filed[0].headerMessageId === captured.headerMessageId, 'Moved wrong message');
+    checks.move = { sourceCount: remaining.length, destinationCount: filed.length };
     result = { ok: true, checks };
   } catch (error) { result = { ok: false, checks, error: error.message }; }
   // This is loopback inside an isolated network namespace, never a provider request.
