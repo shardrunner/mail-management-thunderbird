@@ -16,7 +16,7 @@ test('each XPI has its manifest at the root, its own code, shared code and nothi
     const entries = execFileSync('unzip', ['-Z1', outputs[i]], { encoding: 'utf8' }).trim().split('\n');
     assert.ok(entries.includes('manifest.json') && entries.includes('LICENSE') && entries.includes('shared/options.html'));
     assert.ok(entries.includes(`extensions/${name}/core.js`) && entries.includes(`extensions/${name}/background.js`));
-    if (name === 'move') assert.ok(entries.includes('extensions/move/banner.js'));
+    if (name === 'move') assert.ok(entries.includes('extensions/move/popup.html') && entries.includes('extensions/move/popup.js'));
     assert.ok(!entries.includes(`extensions/${name}/manifest.json`));
     const foreign = new RegExp(`\\.md$|^tests/|^docs/|^extensions/(?!${name}/)`);
     assert.deepEqual(entries.filter(e => foreign.test(e)), []);

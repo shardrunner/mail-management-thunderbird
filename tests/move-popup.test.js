@@ -1,207 +1,179 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { registerMoveBackground } from '../extensions/move/core.js';
-import { moveBannerOperation } from '../extensions/move/banner.js';
+import { readFile } from 'node:fs/promises';
+import vm from 'node:vm';
+import { startPopup } from '../extensions/move/popup.js';
 import { waitFor } from './helpers.js';
 
-function setupDom() {
-  const nodes = new Map();
-  let appended = null;
-  function makeEl(tag = 'div') {
-    return {
-      tagName: tag.toUpperCase(),
-      id: '',
-      className: '',
-      value: '',
-      textContent: '',
-      disabled: false,
-      hidden: false,
-      dataset: {},
-      style: {},
-      children: [],
-      listeners: {},
-      addEventListener(name, fn) { this.listeners[name] = fn; },
-      replaceChildren(...children) { this.children = children; },
-      focus() { this.focused = true; },
-      click() { this.listeners.click?.({ preventDefault() {} }); },
-      remove() { if (appended === this) appended = null; },
-      set innerHTML(_) {
-        for (const id of ['bar', 'status', 'error', 'controls', 'search', 'folders', 'move', 'settings', 'close']) {
-          const el = makeEl(id);
-          el.id = id;
-          nodes.set(id, el);
-        }
-      },
-      querySelector: sel => nodes.get(sel.replace(/^#/, '')),
-    };
-  }
-  globalThis.document = {
-    body: { style: {} },
-    documentElement: { appendChild(el) { appended = el; } },
-    getElementById: id => (appended?.id === id ? appended : null),
-    createElement: makeEl,
+// Just enough DOM for popup.html: a select's value must name one of its options.
+function fakeDocument() {
+  const listeners = {};
+  const element = tag => ({
+    tag, textContent: '', disabled: false, children: [], listeners: {}, _value: '',
+    get value() { return this._value; },
+    set value(v) { this._value = this.tag !== 'select' || this.children.some(o => o.value === v) ? v : ''; },
+    addEventListener(name, fn) { this.listeners[name] = fn; },
+    replaceChildren(...children) { this.children = children; if (!children.some(o => o.value === this._value)) this._value = ''; },
+  });
+  const nodes = Object.fromEntries(['status', 'error', 'search', 'move', 'settings'].map(id => [id, element('input')]));
+  nodes.folders = element('select');
+  const doc = {
+    closed: false,
+    getElementById: id => nodes[id],
+    createElement: () => ({ value: '', textContent: '' }),
+    addEventListener(name, fn) { listeners[name] = fn; },
+    key(key, target = nodes.search) { listeners.keydown({ key, target, preventDefault() {} }); },
   };
-  return { nodes, getHost: () => appended };
+  doc.defaultView = { close() { doc.closed = true; } };
+  return { doc, $: id => nodes[id] };
 }
 
-async function setupMove({
-  selected = [{ id: 7 }],
+function setup({
   reply = 'Local/Projects\nproject keywords',
   onFetch,
-  favorite = false,
-  recent = [],
-  senderTabId = -1,
-  messagePaneVisible = true,
+  tabType = 'mail',
+  selected = [{ id: 7 }],
   apiKey = { key: 'session-key', endpoint: 'https://api.openai.com/v1/responses' },
+  moveEvent = 'onMoved',
 } = {}) {
-  const dom = setupDom();
-  const requests = [], moves = [], banners = [], paneUpdates = [];
-  let moved = null, optionsOpened = 0, paneVisible = messagePaneVisible;
+  const { doc, $ } = fakeDocument();
+  const moves = [];
+  let optionsOpened = 0;
+  const listeners = {};
   const folder = { id: 'src', accountId: 'a', path: '/Inbox', specialUse: ['inbox'] };
-  const message = { id: 7, folder, subject: 'Captured subject', author: 'sender', size: 10, date: new Date(0) };
+  const message = { id: 7, folder, subject: 'Captured subject', author: 'sender', date: new Date(0) };
   const storage = { local: {}, session: apiKey ? { apiKey } : {} };
-  const area = name => ({
-    get: async () => structuredClone(storage[name]),
-    set: async v => Object.assign(storage[name], v),
-  });
-  let bg;
-  globalThis.fetch = async (url, init) => {
-    requests.push(init.body);
-    if (onFetch) await onFetch(init);
-    return new Response(JSON.stringify({ status: 'completed', output: [{ type: 'message', role: 'assistant', status: 'completed', content: [{ type: 'output_text', text: reply }] }] }));
+  globalThis.fetch = async () => {
+    await onFetch?.();
+    return new Response(JSON.stringify({ status: 'completed', output: [{ type: 'message', content: [{ type: 'output_text', text: reply }] }] }));
   };
   const api = {
-    runtime: {
-      openOptionsPage: async () => { optionsOpened++; },
-      sendMessage: msg => bg.onMessage(msg, { tab: { id: senderTabId } }),
-    },
-    action: { setBadgeText: async () => {}, setTitle: async () => {} },
-    messageDisplayAction: { setBadgeText: async () => {}, setTitle: async () => {} },
+    runtime: { openOptionsPage: async () => { optionsOpened++; } },
+    tabs: { query: async () => [{ id: 1, type: tabType }] },
+    mailTabs: { getSelectedMessages: async () => ({ messages: selected }) },
     messageDisplay: { getDisplayedMessage: async () => message },
-    mailTabs: {
-      getSelectedMessages: async () => ({ messages: selected }),
-      setSelectedMessages: async () => {},
-      get: async () => ({ messagePaneVisible: paneVisible }),
-      update: async (_tabId, props) => {
-        if (typeof props.messagePaneVisible === 'boolean') {
-          paneVisible = props.messagePaneVisible;
-          paneUpdates.push(paneVisible);
-        }
-      },
-    },
-    storage: { local: area('local'), session: area('session') },
-    accounts: { get: async () => ({ id: 'a', name: 'Local', rootFolder: { subFolders: [folder, { id: 'p', path: '/Projects', isFavorite: favorite }, { id: 'o', path: '/Other' }] } }) },
-    folders: { query: async () => recent.map(id => ({ id })), getFolderCapabilities: async () => ({ canAddMessages: true, canDeleteMessages: true }) },
+    storage: { local: { get: async () => storage.local }, session: { get: async () => storage.session } },
+    accounts: { get: async () => ({ id: 'a', name: 'Local', rootFolder: { subFolders: [folder, { id: 'p', path: '/Projects' }, { id: 'o', path: '/Other', isFavorite: true }] } }) },
+    folders: { query: async () => [], getFolderCapabilities: async () => ({ canAddMessages: true, canDeleteMessages: true }) },
     messages: {
       get: async () => message,
-      getFull: async () => ({ contentType: 'text/plain', body: 'SELECTED MESSAGE ONLY' }),
-      move: async (...args) => { moves.push(args); moved?.({ messages: [message] }, { messages: [{ folder: { id: args[1] } }] }); },
-      onMoved: { addListener(fn) { moved = fn; }, removeListener() { moved = null; } },
-      onCopied: { addListener() {}, removeListener() {} },
-    },
-    scripting: {
-      executeScript: async ({ args: [payload] }) => {
-        banners.push(payload);
-        return [{ result: moveBannerOperation(payload) }];
-      },
+      getFull: async () => ({ contentType: 'text/plain', body: 'body' }),
+      move: async (...args) => { moves.push(args); listeners[moveEvent]?.({ messages: [message] }, { messages: [{ folder: { id: args[1] } }] }); },
+      onMoved: { addListener(fn) { listeners.onMoved = fn; }, removeListener() {} },
+      onCopied: { addListener(fn) { listeners.onCopied = fn; }, removeListener() {} },
     },
   };
-  globalThis.browser = api;
-  bg = registerMoveBackground(api);
-  return { api, bg, dom, requests, moves, banners, paneUpdates, optionsOpened: () => optionsOpened };
+  return { api, doc, $, moves, started: startPopup(api, doc), optionsOpened: () => optionsOpened };
 }
 
-test('inline banner shows loading, then preselects suggestion when ready, and Enter moves and clears even when sender.tab.id is -1', async () => {
-  const m = await setupMove({ senderTabId: -1 });
-  await m.bg.onTriggered({ id: 1 });
-  assert.equal(m.banners[0].state, 'loading');
-  assert.equal(m.banners[1].state, 'ready');
-  assert.match(m.dom.nodes.get('status').textContent, /Suggested: Local\/Projects — project keywords/);
-  assert.equal(m.dom.nodes.get('folders').value, 'Local/Projects');
-  assert.equal(m.dom.nodes.get('move').disabled, false);
-
-  m.dom.getHost().listeners.keydown({ key: 'Enter', target: m.dom.nodes.get('search'), preventDefault() {} });
-  await waitFor(() => m.moves.length === 1, 'move dispatched');
-  assert.deepEqual(m.moves, [[[7], 'p', { isUserAction: true }]]);
-  await waitFor(() => m.dom.getHost() === null, 'banner cleared after confirmed move');
-});
-
-test('move-confirm still succeeds if background event page restarted and lost in-memory sessions', async () => {
-  const m = await setupMove({ senderTabId: -1 });
-  await m.bg.onTriggered({ id: 1 });
-  // Simulate MV3 background event-page restart by creating a fresh background instance.
-  const freshBg = registerMoveBackground(m.api);
-  m.api.runtime.sendMessage = msg => freshBg.onMessage(msg, { tab: { id: -1 } });
-
-  m.dom.getHost().listeners.keydown({ key: 'Enter', target: m.dom.nodes.get('search'), preventDefault() {} });
-  await waitFor(() => m.moves.length === 1, 'stateless move dispatched');
-  assert.deepEqual(m.moves, [[[7], 'p', { isUserAction: true }]]);
-  await waitFor(() => m.dom.getHost() === null, 'banner cleared after stateless move');
-});
-
-test('when triggered from message list with hidden message pane, temporarily opens pane and restores it after move', async () => {
-  const m = await setupMove({ messagePaneVisible: false });
-  await m.bg.onTriggered({ id: 1 });
-  assert.deepEqual(m.paneUpdates, [true]);
-
-  m.dom.getHost().listeners.keydown({ key: 'Enter', target: m.dom.nodes.get('search'), preventDefault() {} });
-  await waitFor(() => m.moves.length === 1, 'move dispatched');
-  await waitFor(() => m.paneUpdates.length === 2, 'message pane restored');
-  assert.deepEqual(m.paneUpdates, [true, false]);
-});
-
-test('typing or arrows in inline banner selects a folder without waiting for AI', async () => {
+test('popup shows the suggestion preselected and Enter moves and closes it', async () => {
   let release;
-  const m = await setupMove({
-    favorite: true,
-    recent: ['p', 'o'],
-    onFetch: () => new Promise(r => { release = r; }),
-  });
-  const pending = m.bg.onTriggered({ id: 1 });
-  await waitFor(() => m.banners.length === 1, 'loading banner rendered');
-  const $ = id => m.dom.nodes.get(id);
-  assert.equal($('folders').value, '');
-  assert.equal($('move').disabled, true);
-
-  $('search').listeners.keydown({ key: 'ArrowDown', preventDefault() {} });
-  assert.equal($('folders').value, 'Local/Projects');
-  $('search').listeners.keydown({ key: 'ArrowDown', preventDefault() {} });
-  assert.equal($('folders').value, 'Local/Other');
-
-  // Late AI suggestion does not overwrite manual choice.
+  const p = setup({ onFetch: () => new Promise(r => { release = r; }) });
+  await waitFor(() => release, 'request sent');
+  assert.equal(p.$('status').textContent, 'Suggesting folder…');
+  assert.equal(p.$('move').disabled, true);
   release();
-  await pending;
-  assert.equal($('folders').value, 'Local/Other');
-
-  // Typing filters and auto-selects top match.
-  $('search').value = 'Projects';
-  $('search').listeners.input();
-  assert.equal($('folders').value, 'Local/Projects');
+  await p.started;
+  assert.equal(p.$('status').textContent, 'Suggested: Local/Projects — project keywords');
+  assert.equal(p.$('folders').value, 'Local/Projects');
+  assert.equal(p.$('folders').children[0].textContent, 'Suggested: Local/Projects');
+  p.doc.key('Enter');
+  await waitFor(() => p.doc.closed, 'popup closed after confirmed move');
+  assert.deepEqual(p.moves, [[[7], 'p', { isUserAction: true }]]);
 });
 
-test('AI error is displayed in the inline banner while keeping manual move working', async () => {
-  const m = await setupMove({ reply: 'Nope\nx' });
-  await m.bg.onTriggered({ id: 1 });
-  const $ = id => m.dom.nodes.get(id);
-  assert.match($('error').textContent, /invalid folder/);
-  assert.equal($('folders').value, '');
-  assert.equal($('move').disabled, true);
-
-  $('folders').value = 'Local/Other';
-  $('folders').listeners.change();
-  $('move').listeners.click();
-  await waitFor(() => m.moves.length === 1, 'manual move dispatched');
-  assert.deepEqual(m.moves, [[[7], 'o', { isUserAction: true }]]);
+test('typing or arrows pick a folder before the suggestion, which then does not override it', async () => {
+  let release;
+  const p = setup({ onFetch: () => new Promise(r => { release = r; }) });
+  await waitFor(() => release, 'request sent');
+  p.$('search').listeners.keydown({ key: 'ArrowDown', preventDefault() {} });
+  assert.equal(p.$('folders').value, 'Local/Other'); // favorite first
+  p.$('search').listeners.keydown({ key: 'ArrowDown', preventDefault() {} });
+  assert.equal(p.$('folders').value, 'Local/Projects');
+  p.$('search').value = 'oth';
+  p.$('search').listeners.input();
+  assert.equal(p.$('folders').value, 'Local/Other');
+  release();
+  await p.started;
+  assert.equal(p.$('folders').value, 'Local/Other');
+  assert.equal(p.$('move').disabled, false);
 });
 
-test('missing API key or invalid selection shows error in the inline banner', async () => {
-  const noKey = await setupMove({ apiKey: null });
-  await noKey.bg.onTriggered({ id: 1 });
-  assert.match(noKey.dom.nodes.get('error').textContent, /API key/);
+test('a message tab uses the displayed message instead of a selection', async () => {
+  const p = setup({ tabType: 'messageDisplay', selected: [] });
+  await p.started;
+  assert.equal(p.$('folders').value, 'Local/Projects');
+});
+
+test('an invalid suggestion is shown as an error and manual move still works', async () => {
+  const p = setup({ reply: 'Nope\nx' });
+  await p.started;
+  assert.match(p.$('error').textContent, /invalid folder/);
+  assert.equal(p.$('move').disabled, true);
+  p.$('folders').value = 'Local/Other';
+  p.$('folders').listeners.change();
+  p.$('move').listeners.click();
+  await waitFor(() => p.doc.closed, 'popup closed');
+  assert.deepEqual(p.moves, [[[7], 'o', { isUserAction: true }]]);
+});
+
+test('a copy outcome keeps the popup open and locked', async () => {
+  const p = setup({ moveEvent: 'onCopied' });
+  await p.started;
+  p.doc.key('Enter');
+  await waitFor(() => /copy, not a move/.test(p.$('status').textContent), 'copy outcome shown');
+  assert.equal(p.doc.closed, false);
+  assert.equal(p.$('move').disabled, true);
+  p.doc.key('Enter');
+  assert.equal(p.moves.length, 1);
+});
+
+test('without an API key the popup stays for manual filing; a multi-selection is rejected', async () => {
+  const noKey = setup({ apiKey: null });
+  await noKey.started;
+  assert.match(noKey.$('error').textContent, /API key/);
+  assert.equal(noKey.optionsOpened(), 0);
+  noKey.$('search').value = 'proj';
+  noKey.$('search').listeners.input();
+  noKey.doc.key('Enter');
+  await waitFor(() => noKey.doc.closed, 'manual move without key');
+  noKey.$('settings').listeners.click();
   assert.equal(noKey.optionsOpened(), 1);
 
-  const multi = await setupMove({ selected: [{ id: 1 }, { id: 2 }] });
-  await multi.bg.onTriggered({ id: 1 });
-  assert.match(multi.dom.nodes.get('error').textContent, /exactly one message/);
-  assert.equal(multi.dom.nodes.get('move').disabled, true);
+  const multi = setup({ selected: [{ id: 1 }, { id: 2 }] });
+  await multi.started;
+  assert.match(multi.$('error').textContent, /exactly one message/);
+  assert.equal(multi.$('move').disabled, true);
+});
+
+async function loadBackground({ actionOpens = true } = {}) {
+  const calls = [], on = {};
+  const event = name => ({ addListener: fn => { on[name] = fn; } });
+  const browser = {
+    action: { openPopup: async options => { calls.push(['action', { ...options }]); return actionOpens; } },
+    messageDisplayAction: { openPopup: async options => { calls.push(['messageDisplayAction', { ...options }]); return true; } },
+    mailTabs: { setSelectedMessages: async (tabId, ids) => { calls.push(['select', tabId, [...ids]]); } },
+    commands: { onCommand: event('command') },
+    menus: { onClicked: event('menu'), create: () => {} },
+    runtime: { onInstalled: event('installed'), openOptionsPage: () => {} },
+  };
+  vm.runInNewContext(await readFile(new URL('../extensions/move/background.js', import.meta.url), 'utf8'), { browser });
+  return { calls, on };
+}
+
+test('shortcut opens the toolbar popup in the main window, else the message header popup', async () => {
+  const main = await loadBackground();
+  await main.on.command('move-suggest', { id: 1, type: 'mail', windowId: 3 });
+  assert.deepEqual(main.calls, [['action', { windowId: 3 }]]);
+
+  const noButton = await loadBackground({ actionOpens: false });
+  await noButton.on.command('move-suggest', { id: 1, type: 'mail', windowId: 3 });
+  await noButton.on.command('move-suggest', { id: 2, type: 'messageDisplay', windowId: 4 });
+  assert.deepEqual(noButton.calls, [['action', { windowId: 3 }], ['messageDisplayAction', { windowId: 3 }], ['messageDisplayAction', { windowId: 4 }]]);
+});
+
+test('context menu selects the clicked messages before opening the popup', async () => {
+  const bg = await loadBackground();
+  await bg.on.menu({ menuItemId: 'move-suggest', selectedMessages: { messages: [{ id: 9 }] } }, { id: 1, type: 'mail', windowId: 3 });
+  assert.deepEqual(bg.calls, [['select', 1, [9]], ['action', { windowId: 3 }]]);
 });

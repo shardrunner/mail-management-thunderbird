@@ -167,6 +167,50 @@ try {
     const timer = setTimeout(() => reject(new Error('Instrumented extension report timeout')), 45000); timer.unref();
   })]);
   if (!report.checks.probe.ok) throw new Error(`Probe failed: ${report.checks.probe.error}`);
+  // Move Suggest popup end to end, without an API key: the probe filed the synthetic message
+  // in SmokeDestination. The shortcut command opens the toolbar popup without a click; typing
+  // a filter and Enter moves the message back, and a confirmed move closes the popup.
+  report.checks.movePopup = await execute(`
+    const done = arguments[arguments.length - 1];
+    (async () => {
+      const { ExtensionParent } = ChromeUtils.importESModule('resource://gre/modules/ExtensionParent.sys.mjs');
+      const { ViewPopup } = ChromeUtils.importESModule('resource:///modules/ExtensionPopups.sys.mjs');
+      const { MailServices } = ChromeUtils.importESModule('resource:///modules/MailServices.sys.mjs');
+      const extension = ExtensionParent.GlobalManager.getExtension('move-suggest@personal.invalid');
+      const win = Services.wm.getMostRecentWindow('mail:3pane');
+      const root = MailServices.accounts.localFoldersServer.rootFolder;
+      const source = root.getChildNamed('SmokeSource'), filed = root.getChildNamed('SmokeDestination');
+      const until = async (condition, label) => {
+        for (const deadline = Date.now() + 15000; !condition();) {
+          if (Date.now() > deadline) throw new Error('Move popup: ' + label);
+          await new Promise(resolve => win.setTimeout(resolve, 100));
+        }
+      };
+      win.focus(); // the command targets the active tab; the probe left composers open
+      await until(() => Services.focus.activeWindow === win, 'main window not focused');
+      win.gTabmail.switchToTab(win.gTabmail.tabInfo.find(tab => tab.mode.name === 'mail3PaneTab'));
+      const about3Pane = win.gTabmail.currentAbout3Pane;
+      about3Pane.displayFolder(filed.URI);
+      await until(() => about3Pane.gDBView?.rowCount === 1, 'filed message not listed');
+      about3Pane.threadTree.selectedIndex = 0;
+      extension.shortcuts.onCommand('move-suggest');
+      const popup = () => ViewPopup.for(extension, win);
+      await until(() => popup()?.browser?.currentURI?.spec.endsWith('/extensions/move/popup.html'), 'not opened');
+      await new Promise(resolve => win.setTimeout(resolve, 2000)); // folders load, key error shown
+      popup().browser.focus(); // headless panels do not take focus themselves (manual check)
+      await until(() => Services.focus.focusedElement === popup().browser, 'popup not focusable');
+      const tip = Cc['@mozilla.org/text-input-processor;1'].createInstance(Ci.nsITextInputProcessor);
+      if (!tip.beginInputTransactionForTests(win)) throw new Error('Move popup: no input transaction');
+      for (const key of [...'SmokeSource', 'Enter']) {
+        const event = new win.KeyboardEvent('', key === 'Enter' ? { key, code: 'Enter', keyCode: 13 } : { key });
+        tip.keydown(event);
+        tip.keyup(event);
+      }
+      await until(() => source.getTotalMessages(false) === 1 && filed.getTotalMessages(false) === 0, 'keyboard move not filed');
+      await until(() => !popup(), 'not closed after a confirmed move');
+      return { opened: true, keyboardMoveWithoutKey: true, closedAfterMove: true };
+    })().then(done, error => done({ error: String(error) }));
+  `);
   report.ok = true;
 } catch (error) {
   report.error = error.message;

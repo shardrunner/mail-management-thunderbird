@@ -16,12 +16,15 @@ read_when:
   headless Thunderbird profile inside a network-isolated `bwrap` sandbox (needs `zip`,
   `unzip`, `bwrap`, `/usr/bin/thunderbird`). A test-only probe extension runs the packaged
   modules against synthetic Local Folders messages: folder eligibility, favorites/recent
-  destination metadata and ordering, inline move banner injection in the 3-pane reading
-  pane, MIME extraction, native HTML conversion (entities, malformed markup, hidden
+  destination metadata and ordering, MIME extraction, native HTML conversion (entities, malformed markup, hidden
   content and attachments over 1 MiB), quoted history, in-place compose replacement in
   both HTML (`isPlainText: false`) and plain-text (`isPlainText: true`) composers, inline
   compose banner isolation, stale Apply/undo/redo/refinement, saved MIME body, safe
-  Capture/Apply refusal after native draft reopening, and an event-confirmed move.
+  Capture/Apply refusal after native draft reopening, and an event-confirmed move. It then
+  opens the Move Suggest popup through its shortcut command (no click), types a folder
+  filter and `Enter` into it without an API key, and checks that the message was filed and
+  the popup closed. Headless panels do not take focus by themselves, so the smoke focuses
+  the popup explicitly; focus on open is a manual check.
 
 ## Manual checks
 
@@ -38,17 +41,19 @@ Use a separate profile (`thunderbird --no-remote --profile <dir>`) with test mai
 3. Compose: type in the composer while a request is in flight → replacement refuses and
    shows the error in the inline banner without overwriting your edits. Empty reply area
    or unusual quote layouts also show an inline error banner at the top of the composer.
-4. Move: select one message and press `Alt+Shift+M` (or click Move Suggest in the message
-   header toolbar) → the inline bar appears at the top of the message reading pane,
-   fetches the suggestion, pre-selects it, and `Enter` moves the message and clears the
-   bar. Reopen on another message, type in the filter box (or press `ArrowDown`) and press
-   `Enter` to move manually without an API key; excluded folders do not appear.
-5. Provider errors (wrong key, wrong model) show a readable error in the inline bar at the
-   top of the message reading pane or composer.
+4. Move: select one message and press `Alt+Shift+M` (also with the reading pane hidden via
+   `F8`; also via the toolbar button, message header button and context menu on an
+   unselected row) → the popup opens with keyboard focus in the filter box, fetches the
+   suggestion, pre-selects it, and `Enter` moves the message and closes the popup. Reopen
+   on another message, type in the filter box (or press `ArrowDown`) and press `Enter` to
+   move manually without an API key; excluded folders do not appear. `Esc` closes it.
+   In a message window, `Alt+Shift+M` opens the popup below the message header button.
+5. Provider errors (wrong key, wrong model) show a readable error in the Move popup or the
+   inline composer banner.
 6. Favorites/recent: mark a filing folder as Favorite in Thunderbird, move a test message
    to another folder, then trigger Move Suggest. Check the labels/order, search, and
    manual selection without an API key. Special folders and their subfolders remain
    excluded.
 7. Shortcuts: `Alt+Shift+C` in a composer runs in-place Compose Assist; `Alt+Shift+M` in
-   the main window opens the inline Move Suggest bar. Reassign both in Manage Extension
+   the main window opens the Move Suggest popup. Reassign both in Manage Extension
    Shortcuts and check the new keys.

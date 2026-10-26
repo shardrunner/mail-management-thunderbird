@@ -14,9 +14,9 @@ draft, typically in just over a second (1.14 s median in the [model
 evaluation](#model-evaluation)). The quote and your signature stay untouched, and
 **Ctrl+Z** restores your notes.
 
-**Move Suggest** files the selected message: press **Alt+Shift+M** and an inline bar at
-the top of the reading pane suggests a folder with a short rationale. Press **Enter** to
-move the message, or type to pick another folder without waiting.
+**Move Suggest** files the selected message: press **Alt+Shift+M** and a popup below its
+toolbar button suggests a folder with a short rationale. Press **Enter** to move the
+message, or type to pick another folder without waiting.
 
 > **Disclaimer:** These extensions are vibe coded for personal use. Use at your own risk.
 
@@ -67,7 +67,7 @@ and a few keywords on the second. An answer that is not exactly one eligible fol
 as an error; you can still pick a folder yourself.
 
 ```text
-Select message ──▶ Alt+Shift+M ──▶ Inline bar in the reading pane
+Select message ──▶ Alt+Shift+M ──▶ Popup below the toolbar button
                                           │
              Eligible folders + message ──┴──▶ Suggested folder + keywords
                                                          │
@@ -120,8 +120,9 @@ Install Add-on From File**.
 ### Configure
 
 Each extension has its own **Quick Start & Settings** tab and its own key. Compose Assist
-opens it on install, update and Thunderbird startup, Move Suggest on install and update;
-both open it whenever a request fails because of the API key. Enter:
+opens it on install, update and Thunderbird startup, and whenever a request fails because
+of the API key; Move Suggest opens it on install and update and otherwise shows key errors
+in its popup. Enter:
 
 | Setting | Default |
 |---|---|
@@ -154,12 +155,14 @@ to the endpoint it was saved with.
 | Action | How |
 |---|---|
 | Suggest a folder | Select one message, press **Alt+Shift+M** or click **Move Suggest** (main toolbar, message header or message-list context menu) |
-| Move to the suggestion | **Enter** or click **Move** |
-| Pick another folder | Type in the filter box or use **Up/Down**, then **Enter**; no need to wait for the model |
-| Close | **Esc** or click **×** |
+| Move to the suggestion | **Enter** or click **Move**; the popup closes once Thunderbird confirms the move |
+| Pick another folder | Type in the filter box or use **Up/Down**, then **Enter**; no need to wait for the model, and no API key needed |
+| Close | **Esc** or click elsewhere; a running request is dropped |
 
-- The bar appears at the top of the reading pane. If you keep the pane hidden (`F8`), it
-  opens temporarily and closes again once the message is moved or the bar is dismissed.
+- The popup works with the reading pane hidden (`F8`). In message tabs and windows it opens
+  below the message header button.
+- Keep the **Move Suggest** button in the main toolbar: the shortcut and the context menu
+  open the popup from it.
 
 Change either shortcut under **Add-ons and Themes → gear icon → Manage Extension
 Shortcuts**.
@@ -195,16 +198,16 @@ CI runs on GitHub Actions with Node.js 22 and 24. The smoke test runs the packag
 extension's compose logic inside a network-isolated Thunderbird with synthetic mail and a
 fake provider. It checks capture and replacement in HTML and plain-text composers, that
 quote and signature stay intact, and undo, redo and draft reopening in the plain-text
-composer. It also runs the packaged Move Suggest logic: folder eligibility, favorites and
-recent destinations, the inline bar in the reading pane and an event-confirmed move. UI and
-shortcut checks that are not automated are listed in the [manual test
-plan](docs/ai/manual-test.md).
+composer. It also runs the packaged Move Suggest logic (folder eligibility, favorites and
+recent destinations) and opens the real popup through its shortcut, where a typed filter
+and **Enter** must produce an event-confirmed move. UI and shortcut checks that are not
+automated are listed in the [manual test plan](docs/ai/manual-test.md).
 
 ## Project structure
 
 ```text
 extensions/compose/   manifest, background triggers, in-place reply flow, injected editor script, prompt
-extensions/move/      manifest, triggers, folder eligibility, suggestion and move, inline bar, prompt
+extensions/move/      manifest, triggers, folder eligibility, suggestion and move, popup, prompt
 shared/               (copied into both) settings page, provider request, MIME text extraction, limits
 scripts/              packaging, Thunderbird smoke runner, model evaluation and judging
 tests/                unit tests; tests/integration holds the smoke-test harness

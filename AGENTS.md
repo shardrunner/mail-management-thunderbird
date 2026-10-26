@@ -6,8 +6,8 @@ Agent guidance for this repository.
 
 Two small, independent Thunderbird 158.0+ (Linux, MV3) extensions for personal use:
 **Compose Assist** (draft or refine a reply in place from plain text written above the
-quote, with an inline status/error banner) and **Move Suggest** (inline bar at the top of
-the message reading pane in the main window that suggests a folder and moves one message).
+quote, with an inline status/error banner) and **Move Suggest** (toolbar popup in the main
+window that suggests a folder and moves one message).
 Vanilla JavaScript, no dependencies, no build step beyond zipping.
 
 ## Read first
@@ -34,7 +34,7 @@ Cases and checks are in `scripts/eval-cases.mjs`; results are in
 `docs/ai/model-evaluation.md`. Both make real, billed provider requests with synthetic mail
 only; run them only with the user's approval.
 
-Run the smoke test after changing `extensions/compose/editor.js`, `extensions/move/banner.js`,
+Run the smoke test after changing `extensions/compose/editor.js`, `extensions/move/popup.js`,
 either `core.js`, or anything Thunderbird API-related; unit tests only use fakes.
 
 ## Layout
@@ -44,10 +44,9 @@ either `core.js`, or anything Thunderbird API-related; unit tests only use fakes
 - `extensions/compose/`: `manifest.json`, `background.js` (registers compose action and
   command listeners), `core.js` (in-place capture, generation and replacement), `policy.js`
   (prompt), `editor.js` (injected into the composer for capture/apply/banner).
-- `extensions/move/`: `manifest.json`, `background.js` (registers toolbar, message header,
-  command and menu listeners), `core.js` (selection, folder eligibility, suggestion and
-  move), `policy.js` (prompt), `banner.js` (inline bar injected into the
-  message reading pane).
+- `extensions/move/`: `manifest.json`, `background.js` (shortcut and menu open the popup),
+  `core.js` (selection, folder eligibility, suggestion and move), `policy.js` (prompt),
+  `popup.html`/`popup.js` (the toolbar and message header popup).
 - `scripts/package.mjs`: each XPI = LICENSE + `shared/` + `extensions/<name>/`, with the
   manifest at the archive root. Any file added there is shipped; `*.md` is excluded.
 - `tests/integration/`: sandboxed smoke runner and a test-only probe extension.
@@ -66,8 +65,10 @@ either `core.js`, or anything Thunderbird API-related; unit tests only use fakes
 
 - `background.js` files are **classic scripts**: no `import`/`export` declarations. They
   must register listeners synchronously at top level.
-- `editor.js` and `banner.js` are serialized by `scripting.executeScript`: keep them
-  self-contained, with no imports or outer variables.
+- `editor.js` is serialized by `scripting.executeScript`: keep it self-contained, with no
+  imports or outer variables.
+- `action.openPopup` needs the toolbar button in the current window's toolbar; it returns
+  `false` otherwise. The message list itself (`about:3pane`) cannot host extension UI.
 - Read mail with `messages.getFull(id, { decrypt: false })`.
 - Follow the reopened-draft boundary restriction in `docs/ai/design.md`; the smoke checks
   both HTML and plain-text composers as well as reopened drafts.

@@ -1,17 +1,16 @@
 // Runs the exact modules extracted from the two built XPIs against synthetic mail only.
 export async function productionChecks({ accounts, captured, destination, htmlMessage }) {
-  const [{ createAdapter, composeReply }, { editorOperation }, { selectedMessageId, loadMessage, eligibleFolders, readMessageText, moveMessage }, { moveBannerOperation }] = await Promise.all([
+  const [{ createAdapter, composeReply }, { editorOperation }, { selectedMessageId, loadMessage, eligibleFolders, readMessageText, moveMessage }] = await Promise.all([
     import('./extensions/compose/core.js'),
     import('./extensions/compose/editor.js'),
     import('./extensions/move/core.js'),
-    import('./extensions/move/banner.js'),
   ]);
   const assert = (condition, message) => { if (!condition) throw new Error(message); };
   const inEditor = async func => (await browser.scripting.executeScript({ target: { tabId: tab.id }, func }))[0].result;
   const protectedNodes = () => inEditor(() => [...document.body.querySelectorAll('[mozquote],blockquote,.moz-cite-prefix,.moz-signature,span[style]')].map(n => n.outerHTML));
   const checks = {};
 
-  // Move: message, folders, inline reading-pane banner and context.
+  // Move: message, folders and context (the popup itself is checked by the smoke worker).
   const [mailTab] = await browser.tabs.query({ type: 'mail' });
   assert(mailTab?.id, 'Expected a mail tab');
   assert(await selectedMessageId(browser, mailTab.id) === captured.id, 'selectedMessageId did not match displayed message');
@@ -19,19 +18,6 @@ export async function productionChecks({ accounts, captured, destination, htmlMe
   const rows = await eligibleFolders(browser, message.folder);
   const target = rows.find(row => row.id === destination.id);
   assert(target, 'Folder eligibility rejected the synthetic destination');
-  const bannerLoading = (await browser.scripting.executeScript({
-    target: { tabId: mailTab.id },
-    func: moveBannerOperation,
-    args: [{ state: 'loading', messageId: message.id, rows, status: 'Move Suggest: Suggesting folder…' }],
-  }))[0]?.result;
-  assert(bannerLoading?.ok, `Move loading banner failed: ${JSON.stringify(bannerLoading)}`);
-  const bannerReady = (await browser.scripting.executeScript({
-    target: { tabId: mailTab.id },
-    func: moveBannerOperation,
-    args: [{ state: 'ready', messageId: message.id, rows, suggestion: { label: target.label, rationale: 'smoke' }, status: `Suggested: ${target.label}` }],
-  }))[0]?.result;
-  assert(bannerReady?.ok && bannerReady.selected === target.label, `Move inline banner failed in message pane: ${JSON.stringify(bannerReady)}`);
-  await browser.scripting.executeScript({ target: { tabId: mailTab.id }, func: moveBannerOperation, args: [{ state: 'clear' }] });
   assert(target.isFavorite, 'Thunderbird favorite flag was not reflected');
   const older = rows.find(row => row.id === htmlMessage.folder.id);
   assert(target.recentIndex != null && older?.recentIndex != null && target.recentIndex < older.recentIndex,

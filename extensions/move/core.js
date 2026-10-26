@@ -1,7 +1,6 @@
-// Move Suggest mailbox logic and inline message-pane controller.
+// Move Suggest mailbox logic: selection, folder eligibility, suggestion and move.
 import { extractMessage } from '../../shared/mail.js';
 import { prepareRequest, requestText } from '../../shared/provider.js';
-import { moveBannerOperation } from './banner.js';
 import { SYSTEM, makePrompt } from './policy.js';
 
 // Special folders, and everything below them, are never offered as destinations.
@@ -29,6 +28,16 @@ export async function selectedMessageId(api, tabId, selection) {
   if (list.id) await api.messages.abortList(list.id);
   if (messages.length !== 1) throw new Error('Select exactly one message.');
   return messages[0].id;
+}
+
+// The popup's window decides the message: the selection in a mail tab, otherwise
+// the message shown in a message tab or window.
+export async function targetMessageId(api) {
+  const [tab] = await api.tabs.query({ active: true, currentWindow: true });
+  if (tab?.type === 'mail') return selectedMessageId(api, tab.id);
+  const message = tab && await api.messageDisplay.getDisplayedMessage(tab.id);
+  if (!message) throw new Error('Select exactly one message.');
+  return message.id;
 }
 
 export async function loadMessage(api, id) {
@@ -77,6 +86,11 @@ export function suggestedFolder(text, rows) {
   return { label: row.label, rationale: rest.join(' ') };
 }
 
+export async function suggestFolder(api, message, rows) {
+  const prompt = makePrompt(message, await readMessageText(api, message), rows);
+  return suggestedFolder(await requestText(await prepareRequest({ system: SYSTEM, prompt }, api)), rows);
+}
+
 // Suggested first, then favorites, then recent destinations (newest first), then alphabetical.
 export function orderedFolders(rows, suggested, search = '') {
   const query = search.toLocaleLowerCase();
@@ -116,202 +130,4 @@ export async function moveMessage(api, message, target, timeoutMs = 15000) {
     api.messages.onMoved.removeListener(onMoved);
     api.messages.onCopied.removeListener(onCopied);
   }
-}
-
-export function registerMoveBackground(api) {
-  const sessions = new Map();
-
-  async function setBadge(tabId, badge, title) {
-    if (!tabId || tabId < 0) return;
-    for (const action of [api.action, api.messageDisplayAction]) {
-      try {
-        await action?.setBadgeText?.({ tabId, text: badge });
-        await action?.setTitle?.({ tabId, title });
-      } catch {
-        // Tab closed or action unavailable.
-      }
-    }
-  }
-
-  async function restorePane(session) {
-    if (session?.restoreMessagePane && session.tabId > 0) {
-      session.restoreMessagePane = false;
-      try {
-        await api.mailTabs?.update?.(session.tabId, { messagePaneVisible: false });
-      } catch {
-        // Tab closed or not a mail tab.
-      }
-    }
-  }
-
-  async function showBanner(tabId, payload) {
-    if (!tabId || tabId < 0) return false;
-    try {
-      if (payload?.state !== 'clear') {
-        await api.messageDisplay?.getDisplayedMessage?.(tabId)?.catch?.(() => null);
-      }
-      const [res] = await api.scripting.executeScript({
-        target: { tabId },
-        func: moveBannerOperation,
-        args: [payload],
-      });
-      return res?.result?.ok === true;
-    } catch {
-      return false;
-    }
-  }
-
-  async function onTriggered(tab, selection) {
-    if (!tab?.id) {
-      [tab] = (await api.tabs?.query?.({ active: true, currentWindow: true })) ?? [];
-      if (!tab?.id) return;
-    }
-    const prev = sessions.get(tab.id);
-    prev?.controller?.abort();
-    const controller = new AbortController();
-    const session = {
-      tabId: tab.id,
-      controller,
-      message: null,
-      rows: [],
-      moved: false,
-      restoreMessagePane: prev?.restoreMessagePane ?? false,
-    };
-    sessions.set(tab.id, session);
-
-    try {
-      const id = await selectedMessageId(api, tab.id, selection);
-      if (selection) {
-        try { await api.mailTabs?.setSelectedMessages?.(tab.id, [id]); } catch { /* ignore */ }
-      }
-      try {
-        const mailTab = await api.mailTabs?.get?.(tab.id);
-        if (mailTab?.messagePaneVisible === false) {
-          session.restoreMessagePane = true;
-          await api.mailTabs?.update?.(tab.id, { messagePaneVisible: true });
-        }
-      } catch {
-        // Standalone message tab/window or mailTabs unavailable.
-      }
-      const message = session.message = await loadMessage(api, id);
-      const rows = session.rows = await eligibleFolders(api, message.folder);
-      if (!rows.length) throw new Error('No eligible destination folders in this account.');
-
-      await setBadge(tab.id, '…', 'Move Suggest — Suggesting folder…');
-      await showBanner(tab.id, {
-        state: 'loading',
-        messageId: message.id,
-        rows,
-        status: 'Move Suggest: Suggesting folder…',
-      });
-
-      const extracted = await readMessageText(api, message);
-      controller.signal.throwIfAborted();
-      const prompt = makePrompt(message, extracted, rows);
-      const prepared = await prepareRequest({ system: SYSTEM, prompt }, api);
-      controller.signal.throwIfAborted();
-      const answer = await requestText(prepared, { signal: controller.signal });
-      controller.signal.throwIfAborted();
-      const suggestion = suggestedFolder(answer, rows);
-      if (sessions.get(tab.id) !== session || session.moved) return;
-
-      const status = suggestion.rationale
-        ? `Suggested: ${suggestion.label} — ${suggestion.rationale}`
-        : `Suggested: ${suggestion.label}`;
-      await setBadge(tab.id, '', `Move Suggest — ${suggestion.label}`);
-      await showBanner(tab.id, {
-        state: 'ready',
-        messageId: message.id,
-        rows,
-        suggestion,
-        status,
-      });
-    } catch (error) {
-      if (sessions.get(tab.id) !== session || session.moved) return;
-      const text = controller.signal.aborted ? 'Request cancelled.' : error.message;
-      await setBadge(tab.id, controller.signal.aborted ? '' : '!', `Move Suggest — ${text}`);
-      await showBanner(tab.id, {
-        state: 'error',
-        messageId: session.message?.id ?? 0,
-        rows: session.rows,
-        error: `Move Suggest: ${text}`,
-      });
-      if (!controller.signal.aborted && /API key/i.test(error.message)) {
-        await api.runtime?.openOptionsPage?.();
-      }
-    } finally {
-      if (sessions.get(tab.id) === session) session.controller = null;
-    }
-  }
-
-  async function onMessage(msg, sender) {
-    if (msg?.type === 'move-open-options') return api.runtime?.openOptionsPage?.();
-    const senderTabId = sender?.tab?.id > 0 ? sender.tab.id : null;
-    const session = (senderTabId ? sessions.get(senderTabId) : null)
-      ?? [...sessions.values()].find(s => s.message?.id === msg?.messageId);
-    const tabId = session?.tabId ?? senderTabId;
-
-    if (msg?.type === 'move-cancel') {
-      if (session) {
-        session.controller?.abort();
-        await restorePane(session);
-        sessions.delete(session.tabId);
-      }
-      await setBadge(tabId, '', 'Move Suggest');
-      return { ok: true };
-    }
-
-    if (msg?.type === 'move-confirm') {
-      if (session?.moved) return { ok: false, error: 'Move Suggest: Move already in progress.' };
-      if (session) {
-        session.moved = true;
-        session.controller?.abort();
-      }
-      try {
-        const message = session?.message ?? (msg.messageId ? await loadMessage(api, msg.messageId) : null);
-        const target = session?.rows?.find(r => r.label === msg.folderLabel)
-          ?? (msg.folderId ? { id: msg.folderId, label: msg.folderLabel } : null);
-        if (!message || !target) throw new Error('Select a destination folder.');
-        const outcome = await moveMessage(api, message, target);
-        await setBadge(tabId, '', 'Move Suggest');
-        if (outcome === 'confirmed') {
-          await showBanner(tabId, { state: 'clear' });
-          await restorePane(session);
-          if (session) sessions.delete(session.tabId);
-          return { ok: true, outcome };
-        }
-        await showBanner(tabId, {
-          state: 'done',
-          messageId: message.id,
-          rows: session?.rows ?? [],
-          status: OUTCOMES[outcome],
-        });
-        return { ok: true, outcome, status: OUTCOMES[outcome] };
-      } catch (error) {
-        if (session) session.moved = false;
-        const text = `Move Suggest: ${error.message}`;
-        await setBadge(tabId, '!', `Move Suggest — ${error.message}`);
-        await showBanner(tabId, {
-          state: 'error',
-          messageId: session?.message?.id ?? msg.messageId ?? 0,
-          rows: session?.rows ?? [],
-          error: text,
-        });
-        return { ok: false, error: text };
-      }
-    }
-  }
-
-  function onRemoved(tabId) {
-    sessions.get(tabId)?.controller?.abort();
-    sessions.delete(tabId);
-  }
-
-  function onStorageChanged(changes, area) {
-    if ((area === 'local' && changes.settings) || (area === 'session' && changes.apiKey)) {
-      for (const session of sessions.values()) session.controller?.abort();
-    }
-  }
-
-  return { onTriggered, onMessage, onRemoved, onStorageChanged };
 }

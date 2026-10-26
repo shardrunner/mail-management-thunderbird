@@ -37,9 +37,9 @@ beyond the safeguards listed below.
 shared/               settings (+ options page), provider request, MIME text extraction, limits
 extensions/compose/   background handles composeAction/shortcut triggers; core.js holds the
                       adapter and in-place reply flow; editor.js is injected into the composer
-extensions/move/      background handles toolbar/header/shortcut/menu triggers; core.js holds
-                      selection, folder eligibility and the move; banner.js renders the inline
-                      bar at the top of the message reading pane
+extensions/move/      background opens the popup for shortcut/menu triggers; core.js holds
+                      selection, folder eligibility, suggestion and the move; popup.js is the
+                      action / message display action popup
 scripts/package.mjs   zips LICENSE + shared/ + extensions/<name>/ with the manifest at the root
 tests/                node:test unit tests; tests/integration is the isolated Thunderbird smoke
 ```
@@ -52,18 +52,23 @@ tests/                node:test unit tests; tests/integration is the isolated Th
   error occurs, the inline banner displays the error right at the top of the composer (and
   dismisses automatically when typing or clicking). If no API key is set, the Settings tab
   opens automatically.
-- **Move Suggest** injects a Shadow DOM inline bar (`banner.js`) at the top of the message
-  reading pane in the main window when triggered via `Alt+Shift+M` (`commands.onCommand`),
-  the message header button (`message_display_action`), the main toolbar button (`action`),
-  or the message-list context menu (`menus`). Because Thunderbird's message list
-  (`about:3pane`) is a privileged system-principal document where WebExtensions cannot
-  inject DOM nodes, the bar renders inside `#messagepane` (temporarily opening
-  `messagePaneVisible` if the reading pane was hidden and restoring it when moved or
-  closed). It immediately shows `Suggesting folder…` with the folder filter and eligible
-  folder list, updates in place with the suggested folder and rationale (or error message)
-  when ready, and moves the message on `Enter`. Both extensions automatically open their
-  Settings page (with a short quick-start guide) on first install or when triggered without
-  an API key.
+- **Move Suggest** is one popup page (`popup.html`) used as `default_popup` of both the
+  main toolbar button (`action`) and the message header button (`message_display_action`).
+  `Alt+Shift+M` (`commands.onCommand`) and the message-list context menu (`menus`, after
+  `mailTabs.setSelectedMessages`, because right-clicking does not select) call
+  `action.openPopup` for a mail tab and fall back to `messageDisplayAction.openPopup`;
+  neither requires a user gesture in Thunderbird 158. The popup reads the selection of
+  its window's mail tab (or the displayed message in a message tab/window), so the
+  reading pane can stay hidden. It shows `Suggesting folder…` with the folder filter and
+  eligible folder list, then the suggestion and rationale (or error), and moves the
+  message on `Enter`. A confirmed move closes the popup; closing it otherwise unloads the
+  page and drops the pending request. The message list (`about:3pane`) is a privileged
+  document without WebExtension UI; a custom column would need a privileged Experiment
+  (`ThreadPaneColumns`), which is out of scope.
+- Both extensions open their Settings page (with a short quick-start guide) on install.
+  Compose Assist also opens it when triggered without an API key; Move Suggest only shows
+  the error, because a Settings tab would take focus and close the popup, and manual
+  filing works without a key.
 - Move Suggest reads favorites from `MailFolder.isFavorite` and queries the source
   account's `lastUsedAsDestination` history. This metadata only annotates the existing
   eligible-folder tree walk. No separate history store, new permissions, or history sent

@@ -8,7 +8,7 @@ const GUIDES = {
   ],
   'Move Suggest': [
     'Select one message in the message list (or open a message) and press Alt+Shift+M (or click Move Suggest in the toolbar, message header, or right-click menu).',
-    'An inline bar appears at the top of the message pane with the suggested folder and rationale (opening the message pane temporarily if hidden).',
+    'A popup opens below the toolbar button with the suggested folder and rationale; keep the Move Suggest button in the main toolbar.',
     'Press Enter to move immediately, type or use Up/Down arrows to pick another folder, or press Esc to close.',
   ],
 };
